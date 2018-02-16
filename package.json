@@ -1,0 +1,26 @@
+{
+  "name": "gif-paradise",
+  "version": "1.0.0",
+  "description": "A Giphy web app to find and bookmark your favorite gifs - Choose the Vanilla JS or the React/Redux version !",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clesgourgues/gif-paradise.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/clesgourgues/gif-paradise/issues"
+  },
+  "homepage": "https://github.com/clesgourgues/gif-paradise#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.17.0"
+  }
+}
