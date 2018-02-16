@@ -1,12 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <title>Gif App</title>
 </head>
+
 <body>
-    <script src="./index.js"></script>    
+    <div id="search-container" class="container">
+        <div id="search">
+            <h1 class="main-title">gif paradise</h1>
+            <form id="search-form">
+                <div class="form-group search-group">
+                    <button type="submit" id="search-btn" class="action">
+                        <i class="fa fa-search fa-2x"></i>
+                    </button>
+                    <input type="text" id="search-input" placeholder="Search gifs">
+                    <button id="delete-btn" class="action">
+                        <i class="fas fa-times fa-2x"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div id="results"></div>
+    </div>
+    <script src="./index.js"></script>
 </body>
+
 </html>

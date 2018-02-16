@@ -1,0 +1,49 @@
+/* body {
+    background: linear-gradient(#ECEDDD, #7BC9C5);
+} */
+
+.search-group {
+    display: flex;
+    flex-direction : row;
+    justify-content: space-around;
+    align-items: center;
+    border: 1px solid black;
+    background: #fff;
+    border-radius: 10px;
+}
+
+.main-title {
+    margin-top : 50px;
+    font-size: 3em;
+    font-family: impact;
+    text-transform: uppercase;
+
+}
+
+.small-text {
+    font-size : 1em;
+    color: #BEBEBE;
+}
+
+.action{
+	height: 40px;
+    background: transparent;
+    border-color: transparent;
+    border-style: none;
+}
+
+#delete-btn {
+    visibility: hidden;
+}
+
+input {
+    border: none;
+    flex-basis: 80%;
+    font-size : 1.2em;
+}
+
+input:focus {
+    border: none;
+    box-shadow: none !important;
+    outline: none;
+  }

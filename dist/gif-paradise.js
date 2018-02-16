@@ -69,11 +69,76 @@ require = (function (modules, cache, entry) {
 
   // Override the current require with this new one
   return newRequire;
-})({4:[function(require,module,exports) {
+})({6:[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = {
+  search: function search(searchTerm) {
+    return fetch("https://api.giphy.com/v1/gifs/search?api_key=v2k68wqUjqUfJLvBHOXNu6i2fCZiqNV5&q=" + searchTerm + "&limit=25&offset=0&rating=G&lang=en").then(function (res) {
+      return res.json();
+    }).then(function (data) {
+      return data.data.map(function (gif) {
+        var obj = {};
+        obj.url = gif.images.original.url;
+        obj.title = gif.title;
+        return obj;
+      });
+    }).catch(function (err) {
+      return console.log(err);
+    });
+  }
+};
+},{}],3:[function(require,module,exports) {
 'use strict';
 
-console.log('hello world');
-},{}],6:[function(require,module,exports) {
+var _gifApi = require('./gifApi');
+
+var _gifApi2 = _interopRequireDefault(_gifApi);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var searchForm = document.getElementById('search-form');
+var searchInput = document.getElementById('search-input');
+var deleteBtn = document.getElementById('delete-btn');
+
+var getGifs = function getGifs(search) {
+  _gifApi2.default.search(search).then(function (results) {
+    var output = '<h2 class="small-text">Il y a ' + results.length + ' gifs</h2><div class="card-columns">';
+    results.forEach(function (gif) {
+      output += '\n          <div class="card mb-2">\n          <img class="card-img-top" src="' + gif.url + '" alt="Card image cap">\n          <div class="card-body">\n       <h5 class="small-text">' + gif.title + '</h5>\n      </div>\n    </div>\n          ';
+    });
+    output += '</div>';
+    document.getElementById('results').innerHTML = output;
+  });
+};
+
+if (window.location.search === '' && window.location.pathname === '/') {
+  searchForm.addEventListener("submit", function (e) {
+    var searchTerm = e.target[1].value;
+    getGifs(searchTerm);
+    history.pushState(searchTerm, '', '?q=' + searchTerm);
+    e.preventDefault();
+  });
+} else {
+  var searchTerm = window.location.search.split('=')[1];
+  searchInput.value = searchTerm;
+  deleteBtn.style.visibility = "visible";
+  getGifs(searchTerm);
+}
+
+deleteBtn.addEventListener("click", function (e) {
+  searchInput.value = '';
+  deleteBtn.style.visibility = "hidden";
+  history.pushState('', '', '');
+});
+
+searchInput.addEventListener("keydown", function (e) {
+  deleteBtn.style.visibility = "visible";
+});
+},{"./gifApi":6}],17:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -93,7 +158,7 @@ module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
-  var ws = new WebSocket('ws://' + hostname + ':' + '49921' + '/');
+  var ws = new WebSocket('ws://' + hostname + ':' + '52074' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -194,5 +259,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[6,4])
+},{}]},{},[17,3])
 //# sourceMappingURL=/dist/gif-paradise.map
