@@ -12,12 +12,28 @@
     border-radius: 10px;
 }
 
+.nav{
+    display: flex;
+    flex-direction : row;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom : 20px;
+}
+
+.selected {
+    text-decoration: underline;
+}
+
 .main-title {
     margin-top : 50px;
     font-size: 3em;
-    font-family: impact;
+    font-family: "Arial Black", Gadget, sans-serif;
     text-transform: uppercase;
+}
 
+.results {
+    flex-basis: 40%;
+    font-size : 2em !important;
 }
 
 .small-text {
@@ -30,6 +46,7 @@
     background: transparent;
     border-color: transparent;
     border-style: none;
+    cursor: pointer;
 }
 
 #delete-btn {
