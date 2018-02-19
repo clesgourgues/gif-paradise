@@ -1,5 +1,7 @@
 import gif from '../helpers/gifApi';
+import storageAvailable from '../helpers/storageAvailable';
 import GifsView from '../views/gifsView';
+import GifModel from '../models/gifModel';
 
 
 export default class GifController {
@@ -14,20 +16,30 @@ export default class GifController {
 
     getGifs(search) {
         gif.search(search).then(results => {
-            let output = `<h2 class="small-text">We found ${results.length} gifs for you !</h2><div class="card-columns">`;
+            console.log(results)
+            let output = `<p class="small-text">We found ${results.length} gifs for you !</p><ul id="grid" class="card-container">`;
             results.forEach(gif => {
                 output += `
-            <div class="card mb-2">
-            <img class="card-img-top" src="${gif.url}" alt="Card image cap">
-            <div class="card-body">
-         <h5 class="small-text">${gif.title}</h5>
-         <i class="far fa-heart"></i>
-        </div>
-      </div>
+            <li class="card">
+                <img src="${gif.url}" alt="${gif.title}">
+                <div class="card-body">
+                    <p>${gif.title}</p>
+                    <i class="far fa-heart"></i>
+                </div>
+            </li>
             `;
             });
-            output += '</div>';
+            output += '</ul>';
             this.gifsView.render(output);
         });
     };
+
+    saveGif(id) {
+        if (storageAvailable('localStorage')) {
+            model.save(id);
+          }
+          else {
+            console.log('no storage !')
+          }
+    }
 };

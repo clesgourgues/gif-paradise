@@ -25,5 +25,8 @@
     "node": "^9.5.0",
     "node-sass": "^4.7.2",
     "sass": "^1.0.0-beta.5.2"
+  },
+  "dependencies": {
+    "popmotion": "^8.1.10"
   }
 }

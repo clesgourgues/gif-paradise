@@ -1,44 +1,93 @@
-/* body {
-    background: linear-gradient(#ECEDDD, #7BC9C5);
-} */
+$color-bg: #F5F0F2;
+$color-blue: #198FE3;
+$color-red: #e12D53;
+$color-header: #fff;
+$color-text: #333;
+
+body {
+    background-color: $color-bg;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    color: $color-text;
+}
+
+h1 {
+    background-color: $color-bg;
+    font-family: 'Bungee Shade', cursive;
+    font-size: 5em;
+    margin-top : 50px;
+    color: $color-red;
+    display: block;
+    text-align : center;
+}
+
+#favourites {
+    position : absolute;
+    top: 30px;
+    right: 30px;
+}
+
+#favourites a:hover {
+    color: $color-red;
+}
+
+#search-form {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 .search-group {
-    display: flex;
-    flex-direction : row;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: 1fr 80% 1fr;
+    justify-items: stretch;
     align-items: center;
-    border: 1px solid black;
+    border: 3px solid $color-text;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    // border-bottom: 3px solid $color-text;
     background: #fff;
     border-radius: 10px;
 }
 
-.nav{
-    display: flex;
-    flex-direction : row;
-    justify-content: space-around;
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 20px 20px;
+    justify-items: stretch;
+    align-items: stretch;
+    max-width: 69em;
+	list-style: none;
+	margin: 30px auto;
+	padding: 0;
+}
+
+.card {
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 200px;
+}
+
+.card img {
+    // width: 150px;
+    outline: none;
+	border: none;
+	display: block;
+	width: 200px;
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+/* Add some padding inside the card container */
+.card-body{
+    padding: 2px 16px;
+    display: grid;
+    grid-template-columns: 90% 1fr;
+    grid-gap-columns: 10px;
     align-items: center;
-    margin-bottom : 20px;
-}
-
-.selected {
-    text-decoration: underline;
-}
-
-.main-title {
-    margin-top : 50px;
-    font-size: 3em;
-    font-family: "Arial Black", Gadget, sans-serif;
-    text-transform: uppercase;
-}
-
-.results {
-    flex-basis: 40%;
-    font-size : 2em !important;
-}
-
-.small-text {
-    font-size : 1em;
-    color: #BEBEBE;
 }
 
 .action{

@@ -10,6 +10,7 @@ export default {
           let obj = {}
           obj.url = gif.images.original.url
           obj.title = gif.title
+          obj.id = gif.id
           return obj
         })
       })

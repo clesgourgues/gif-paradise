@@ -1,3 +1,5 @@
-class gifModel {
+export default class gifModel {
+
+
     
 }

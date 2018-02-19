@@ -1,20 +1,20 @@
-export default class RouteController {
-    init() {
-        let searchTerm = window.location.search.split('=')[1];
-        console.log(searchTerm)
-        return searchTerm
-    }
+export default {
 
     getRoute() {
+        let route = window.location.pathname;
+        return route;
+    },
 
-    }
+    setRoute(search) {
+        history.pushState(search, null, `?q=${search}`);
+    },
 
-    setRoute() {
-
-    }
-
-    deleteRoute() {
-
+    resetSearch(form, button, input) {
+        form.reset();
+        button.style.visibility = "hidden";
+        input.focus();
+        history.pushState(null, null, '/');
+        window.location = '/';
     }
 
 }

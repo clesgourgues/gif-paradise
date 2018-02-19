@@ -69,7 +69,40 @@ require = (function (modules, cache, entry) {
 
   // Override the current require with this new one
   return newRequire;
-})({9:[function(require,module,exports) {
+})({12:[function(require,module,exports) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+    getRoute: function getRoute() {
+        var route = window.location.pathname;
+        return route;
+    },
+    setRoute: function setRoute(search) {
+        history.pushState(search, null, '?q=' + search);
+    },
+    resetSearch: function resetSearch(form, button, input) {
+        form.reset();
+        button.style.visibility = "hidden";
+        input.focus();
+        history.pushState(null, null, '/');
+        window.location = '/';
+    }
+};
+},{}],6:[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var on = function on(target, event, handler) {
+    return target.addEventListener(event, handler);
+};
+
+exports.on = on;
+},{}],7:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -81,6 +114,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _app = require('../app');
 
 var _app2 = _interopRequireDefault(_app);
+
+var _routeController = require('../controllers/routeController');
+
+var _routeController2 = _interopRequireDefault(_routeController);
+
+var _events = require('../helpers/events');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -100,28 +139,35 @@ var GifsView = function () {
             var searchInput = document.getElementById('search-input');
             var deleteBtn = document.getElementById('delete-btn');
 
-            if (window.location.search === '' && window.location.pathname === '/') {
-                searchForm.addEventListener("submit", function (e) {
-                    e.preventDefault();
-                    var searchTerm = e.target[1].value;
-                    _app2.default.getGifs(searchTerm);
-                    history.pushState(searchTerm, '', '?q=' + searchTerm);
-                    _this.render(output);
-                });
-            } else {
-                var searchTerm = window.location.search.split('=')[1];
+            // how to render considering the route
+            var route = _routeController2.default.getRoute();
+            var search = window.location.search;
+
+            if (route === 'favourites') {
+                console.log('favourites');
+            } else if (search.length > 0) {
+                var searchTerm = search.split('=')[1];
                 searchInput.value = searchTerm;
                 deleteBtn.style.visibility = "visible";
                 _app2.default.getGifs(searchTerm);
+            } else {
+                this.render('<p>pas de recherche en cours</p>');
             }
 
-            deleteBtn.addEventListener("click", function (e) {
-                searchInput.value = '';
-                deleteBtn.style.visibility = "hidden";
-                history.pushState(null, null, '/');
+            // add event listeners that change routes
+            (0, _events.on)(searchForm, "submit", function (e) {
+                e.preventDefault();
+                var searchTerm = e.target[1].value;
+                _routeController2.default.setRoute(searchTerm);
+                _this.init();
             });
 
-            searchInput.addEventListener("keydown", function (e) {
+            (0, _events.on)(deleteBtn, "click", function (e) {
+                _routeController2.default.resetSearch(searchForm, deleteBtn, searchInput);
+                _this.init();
+            });
+
+            (0, _events.on)(searchInput, "keydown", function (e) {
                 deleteBtn.style.visibility = "visible";
             });
         }
@@ -137,7 +183,7 @@ var GifsView = function () {
 
 exports.default = GifsView;
 ;
-},{"../app":5}],11:[function(require,module,exports) {
+},{"../app":4,"../controllers/routeController":12,"../helpers/events":6}],11:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -152,6 +198,7 @@ exports.default = {
         var obj = {};
         obj.url = gif.images.original.url;
         obj.title = gif.title;
+        obj.id = gif.id;
         return obj;
       });
     }).catch(function (err) {
@@ -159,6 +206,49 @@ exports.default = {
     });
   }
 };
+},{}],27:[function(require,module,exports) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = storageAvailable;
+function storageAvailable(type) {
+    try {
+        var storage = window[type],
+            x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    } catch (e) {
+        return e instanceof DOMException && (
+        // everything except Firefox
+        e.code === 22 ||
+        // Firefox
+        e.code === 1014 ||
+        // test name field too, because code might not be present
+        // everything except Firefox
+        e.name === 'QuotaExceededError' ||
+        // Firefox
+        e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+        // acknowledge QuotaExceededError only if there's something already stored
+        storage.length !== 0;
+    };
+};
+},{}],28:[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var gifModel = function gifModel() {
+    _classCallCheck(this, gifModel);
+};
+
+exports.default = gifModel;
 },{}],8:[function(require,module,exports) {
 'use strict';
 
@@ -172,9 +262,17 @@ var _gifApi = require('../helpers/gifApi');
 
 var _gifApi2 = _interopRequireDefault(_gifApi);
 
+var _storageAvailable = require('../helpers/storageAvailable');
+
+var _storageAvailable2 = _interopRequireDefault(_storageAvailable);
+
 var _gifsView = require('../views/gifsView');
 
 var _gifsView2 = _interopRequireDefault(_gifsView);
+
+var _gifModel = require('../models/gifModel');
+
+var _gifModel2 = _interopRequireDefault(_gifModel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -198,13 +296,23 @@ var GifController = function () {
             var _this = this;
 
             _gifApi2.default.search(search).then(function (results) {
-                var output = '<h2 class="small-text">We found ' + results.length + ' gifs for you !</h2><div class="card-columns">';
+                console.log(results);
+                var output = '<p class="small-text">We found ' + results.length + ' gifs for you !</p><ul id="grid" class="card-container">';
                 results.forEach(function (gif) {
-                    output += '\n            <div class="card mb-2">\n            <img class="card-img-top" src="' + gif.url + '" alt="Card image cap">\n            <div class="card-body">\n         <h5 class="small-text">' + gif.title + '</h5>\n         <i class="far fa-heart"></i>\n        </div>\n      </div>\n            ';
+                    output += '\n            <li class="card">\n                <img src="' + gif.url + '" alt="' + gif.title + '">\n                <div class="card-body">\n                    <p>' + gif.title + '</p>\n                    <i class="far fa-heart"></i>\n                </div>\n            </li>\n            ';
                 });
-                output += '</div>';
+                output += '</ul>';
                 _this.gifsView.render(output);
             });
+        }
+    }, {
+        key: 'saveGif',
+        value: function saveGif(id) {
+            if ((0, _storageAvailable2.default)('localStorage')) {
+                model.save(id);
+            } else {
+                console.log('no storage !');
+            }
         }
     }]);
 
@@ -213,7 +321,7 @@ var GifController = function () {
 
 exports.default = GifController;
 ;
-},{"../helpers/gifApi":11,"../views/gifsView":9}],5:[function(require,module,exports) {
+},{"../helpers/gifApi":11,"../helpers/storageAvailable":27,"../views/gifsView":7,"../models/gifModel":28}],4:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -235,7 +343,7 @@ var gifsView = new _gifsView2.default();
 var app = new _gifController2.default(gifsView);
 
 exports.default = app;
-},{"./views/gifsView":9,"./controllers/gifController":8}],10:[function(require,module,exports) {
+},{"./views/gifsView":7,"./controllers/gifController":8}],10:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -266,7 +374,7 @@ function getBaseURL(url) {
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
 
-},{}],7:[function(require,module,exports) {
+},{}],9:[function(require,module,exports) {
 var bundle = require('./bundle-url');
 
 function updateLink(link) {
@@ -298,24 +406,13 @@ function reloadCSS() {
 
 module.exports = reloadCSS;
 
-},{"./bundle-url":10}],4:[function(require,module,exports) {
+},{"./bundle-url":10}],3:[function(require,module,exports) {
 
         var reloadCSS = require('_css_loader');
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":7}],6:[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-var on = function on(target, event, handler) {
-    return target.addEventListener(event, handler);
-};
-
-exports.on = on;
-},{}],2:[function(require,module,exports) {
+},{"_css_loader":9}],2:[function(require,module,exports) {
 'use strict';
 
 var _app = require('./src/js/app');
@@ -333,7 +430,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (0, _events.on)(window, 'load', function () {
   return _app2.default.init();
 });
-},{"./src/js/app":5,"./src/css/style.scss":4,"./src/js/helpers/events":6}],12:[function(require,module,exports) {
+(0, _events.on)(window, 'hashchange', function () {
+  return _app2.default.init();
+});
+},{"./src/js/app":4,"./src/css/style.scss":3,"./src/js/helpers/events":6}],26:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -353,7 +453,7 @@ module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
-  var ws = new WebSocket('ws://' + hostname + ':' + '64055' + '/');
+  var ws = new WebSocket('ws://' + hostname + ':' + '51597' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -454,5 +554,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[12,2])
+},{}]},{},[26,2])
 //# sourceMappingURL=/dist/gif-paradise.map

@@ -1,34 +1,43 @@
 import app from '../app';
+import router from '../controllers/routeController';
+import { on } from '../helpers/events';
 
 export default class GifsView {
-
+    
     init() {
         const searchForm = document.getElementById('search-form');
         const searchInput = document.getElementById('search-input');
         const deleteBtn = document.getElementById('delete-btn');
 
-        if (window.location.search === '' && window.location.pathname === '/') {
-            searchForm.addEventListener("submit", e => {
-                e.preventDefault();
-                const searchTerm = e.target[1].value;
-                app.getGifs(searchTerm);
-                history.pushState(searchTerm, '', `?q=${searchTerm}`);
-                this.render(output);
-            })
-        } else {
-            const searchTerm = window.location.search.split('=')[1];
+        // how to render considering the route
+        let route = router.getRoute();
+        let search = window.location.search;
+
+        if (route === 'favourites') {
+            console.log('favourites')
+        } else if (search.length > 0) {
+            const searchTerm = search.split('=')[1];
             searchInput.value = searchTerm;
             deleteBtn.style.visibility = "visible";
             app.getGifs(searchTerm);
+        } else {
+            this.render('<p>pas de recherche en cours</p>');
         }
 
-        deleteBtn.addEventListener("click", e => {
-            searchInput.value = '';
-            deleteBtn.style.visibility = "hidden";
-            history.pushState(null, null, '/');
+        // add event listeners that change routes
+        on(searchForm, "submit", e => {
+            e.preventDefault();
+            const searchTerm = e.target[1].value;
+            router.setRoute(searchTerm);
+            this.init();
         })
 
-        searchInput.addEventListener("keydown", e => {
+        on(deleteBtn, "click", e => {
+            router.resetSearch(searchForm, deleteBtn, searchInput);
+            this.init();
+        })
+
+        on(searchInput, "keydown", e => {
             deleteBtn.style.visibility = "visible";
         })
 

@@ -3,3 +3,4 @@ import style from './src/css/style.scss'
 import { on } from './src/js/helpers/events';
 
 on(window, 'load', () => app.init());
+on(window, 'hashchange', () => app.init());
