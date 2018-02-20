@@ -11,7 +11,6 @@ export default class GifsView {
 
         // how to render considering the route
         let route = router.getRoute();
-        console.log('route :', route)
         let search = window.location.search;
 
         if (route === '/favourites') {
@@ -62,7 +61,6 @@ export default class GifsView {
                     gif.classList.add("favourite");
                     app.saveGif(obj)
                 } else {
-                    console.log('coucou')
                     gif.classList.remove("favourite");
                     app.deleteGif(obj)
                 }
