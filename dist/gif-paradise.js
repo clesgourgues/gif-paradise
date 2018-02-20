@@ -156,7 +156,7 @@ var GifsView = function () {
                 this.message('<p>pas de recherche en cours</p>');
             }
 
-            // add event listeners that change routes
+            // add event listeners that change routes - todo : functions in controller
             (0, _events.on)(searchForm, "submit", function (e) {
                 e.preventDefault();
                 var searchTerm = e.target[1].value;
@@ -184,14 +184,20 @@ var GifsView = function () {
             var gifs = document.querySelectorAll("ul li div i");
             gifs.forEach(function (gif) {
                 (0, _events.on)(gif, 'click', function (e) {
-                    //class favourite true ? alors on remove
+                    var isFavourite = e.srcElement.classList[2] === "favourite";
                     var obj = {};
                     obj.url = e.path[2].firstElementChild.currentSrc;
                     obj.title = e.path[2].firstElementChild.alt;
                     obj.id = e.path[2].dataset.id;
-                    obj.favourite = true;
-                    console.log(obj);
-                    _app2.default.saveGif(obj);
+                    if (!isFavourite) {
+                        obj.favourite = true;
+                        gif.classList.add("favourite");
+                        _app2.default.saveGif(obj);
+                    } else {
+                        console.log('coucou');
+                        gif.classList.remove("favourite");
+                        _app2.default.deleteGif(obj);
+                    }
                 });
             });
         }
@@ -216,7 +222,7 @@ var GifsView = function () {
 
 exports.default = GifsView;
 ;
-},{"../app":3,"../controllers/routeController":11,"../helpers/events":5}],8:[function(require,module,exports) {
+},{"../app":4,"../controllers/routeController":11,"../helpers/events":5}],9:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -269,9 +275,9 @@ var GifModel = function () {
 	}, {
 		key: 'insert',
 		value: function insert(gif, callback) {
-			var gifs = this.getLocalStorage('gifs');
-			gifs.push(gif);
-			this.setLocalStorage('gifs', JSON.stringify(gifs));
+			var favouriteGifs = this.getLocalStorage('gifs');
+			favouriteGifs.push(gif);
+			this.setLocalStorage('gifs', JSON.stringify(favouriteGifs));
 			if (callback) {
 				callback();
 			}
@@ -279,16 +285,12 @@ var GifModel = function () {
 	}, {
 		key: 'remove',
 		value: function remove(gif, callback) {
-			var gifs = this.getLocalStorage('gifs').filter(function (gifs) {
-				for (k in gifs) {
-					if (gifs[k][id] !== gif[id]) {
-						return true;
-					}
-				}
-				return false;
+			var favouriteGifs = this.getLocalStorage('gifs');
+			var filteredGifs = favouriteGifs.filter(function (favourite) {
+				return favourite.id !== gif.id;
 			});
-
-			this.setLocalStorage('gifs', JSON.stringify(gifs));
+			console.log(filteredGifs);
+			this.setLocalStorage('gifs', JSON.stringify(filteredGifs));
 
 			if (callback) {
 				callback();
@@ -329,7 +331,7 @@ function storageAvailable(type) {
         storage.length !== 0;
     };
 };
-},{}],9:[function(require,module,exports) {
+},{}],8:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -384,6 +386,7 @@ var GifController = function () {
             var results = this.gifModel.getLocalStorage('gifs');
             this.gifsView.render(results);
             this.gifsView.message('<p>You have ' + results.length + ' favourites !</p>');
+            this.gifsView.listen();
         }
     }, {
         key: 'saveGif',
@@ -394,6 +397,11 @@ var GifController = function () {
                 console.log('no storage available !');
             }
         }
+    }, {
+        key: 'deleteGif',
+        value: function deleteGif(gif) {
+            this.gifModel.remove(gif);
+        }
     }]);
 
     return GifController;
@@ -401,7 +409,7 @@ var GifController = function () {
 
 exports.default = GifController;
 ;
-},{"../helpers/storageAvailable":12,"../views/gifsView":7,"../models/gifModel":8}],3:[function(require,module,exports) {
+},{"../helpers/storageAvailable":12,"../views/gifsView":7,"../models/gifModel":9}],4:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -428,7 +436,7 @@ var gifModel = new _gifModel2.default();
 var app = new _gifController2.default(gifsView, gifModel);
 
 exports.default = app;
-},{"./views/gifsView":7,"./models/gifModel":8,"./controllers/gifController":9}],10:[function(require,module,exports) {
+},{"./views/gifsView":7,"./models/gifModel":9,"./controllers/gifController":8}],10:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -491,7 +499,7 @@ function reloadCSS() {
 
 module.exports = reloadCSS;
 
-},{"./bundle-url":10}],4:[function(require,module,exports) {
+},{"./bundle-url":10}],3:[function(require,module,exports) {
 
         var reloadCSS = require('_css_loader');
         module.hot.dispose(reloadCSS);
@@ -518,7 +526,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (0, _events.on)(window, 'hashchange', function () {
   return _app2.default.init();
 });
-},{"./src/js/app":3,"./src/css/style.scss":4,"./src/js/helpers/events":5}],18:[function(require,module,exports) {
+},{"./src/js/app":4,"./src/css/style.scss":3,"./src/js/helpers/events":5}],17:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -538,7 +546,7 @@ module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
-  var ws = new WebSocket('ws://' + hostname + ':' + '57086' + '/');
+  var ws = new WebSocket('ws://' + hostname + ':' + '55340' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -639,5 +647,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[18,2])
+},{}]},{},[17,2])
 //# sourceMappingURL=/dist/gif-paradise.map

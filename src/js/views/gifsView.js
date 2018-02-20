@@ -25,7 +25,7 @@ export default class GifsView {
             this.message('<p>pas de recherche en cours</p>');
         }
 
-        // add event listeners that change routes
+        // add event listeners that change routes - todo : functions in controller
         on(searchForm, "submit", e => {
             e.preventDefault();
             const searchTerm = e.target[1].value;
@@ -52,14 +52,20 @@ export default class GifsView {
         const gifs = document.querySelectorAll("ul li div i");
         gifs.forEach(gif => {
             on(gif, 'click', e => {
-                //class favourite true ? alors on remove
+                let isFavourite = e.srcElement.classList[2] === "favourite"
                 let obj = {}
                 obj.url = e.path[2].firstElementChild.currentSrc
                 obj.title = e.path[2].firstElementChild.alt
                 obj.id = e.path[2].dataset.id
-                obj.favourite = true
-                console.log(obj)
-                app.saveGif(obj)
+                if (!isFavourite) {
+                    obj.favourite = true
+                    gif.classList.add("favourite");
+                    app.saveGif(obj)
+                } else {
+                    console.log('coucou')
+                    gif.classList.remove("favourite");
+                    app.deleteGif(obj)
+                }
             });
         });
     };

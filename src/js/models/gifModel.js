@@ -34,25 +34,19 @@ export default class GifModel {
 
 
 	insert(gif, callback) {
-		const gifs = this.getLocalStorage('gifs');
-		gifs.push(gif);
-		this.setLocalStorage('gifs', JSON.stringify(gifs));
+		let favouriteGifs = this.getLocalStorage('gifs');
+		favouriteGifs.push(gif);
+		this.setLocalStorage('gifs', JSON.stringify(favouriteGifs));
 		if (callback) {
 			callback();
 		}
 	}
 
 	remove(gif, callback) {
-		const gifs = this.getLocalStorage('gifs').filter(gifs => {
-			for (k in gifs) {
-				if (gifs[k][id] !== gif[id]) {
-					return true;
-				}
-			}
-			return false;
-		});
-
-		this.setLocalStorage('gifs', JSON.stringify(gifs));
+		let favouriteGifs = this.getLocalStorage('gifs')
+		let filteredGifs = favouriteGifs.filter(favourite => favourite.id !== gif.id)
+		console.log(filteredGifs)
+		this.setLocalStorage('gifs', JSON.stringify(filteredGifs));
 
 		if (callback) {
 			callback();

@@ -26,14 +26,19 @@ export default class GifController {
         const results = this.gifModel.getLocalStorage('gifs');
         this.gifsView.render(results);
         this.gifsView.message(`<p>You have ${results.length} favourites !</p>`)
+        this.gifsView.listen();
     };
 
     saveGif(gif) {
         if (storageAvailable('localStorage')) {
             this.gifModel.insert(gif);
-          }
-          else {
+        }
+        else {
             console.log('no storage available !')
-          }
+        }
+    }
+
+    deleteGif(gif) {
+        this.gifModel.remove(gif);
     }
 };
