@@ -1,4 +1,3 @@
-import gif from '../helpers/gifApi';
 import storageAvailable from '../helpers/storageAvailable';
 import GifsView from '../views/gifsView';
 import GifModel from '../models/gifModel';
@@ -6,8 +5,9 @@ import GifModel from '../models/gifModel';
 
 export default class GifController {
 
-    constructor(GifsView) {
+    constructor(GifsView, GifModel) {
         this.gifsView = GifsView;
+        this.gifModel = GifModel;
     };
 
     init() {
@@ -15,31 +15,23 @@ export default class GifController {
     };
 
     getGifs(search) {
-        gif.search(search).then(results => {
-            console.log(results)
-            let output = `<p class="small-text">We found ${results.length} gifs for you !</p><ul id="grid" class="card-container">`;
-            results.forEach(gif => {
-                output += `
-            <li class="card">
-                <img src="${gif.url}" alt="${gif.title}">
-                <div class="card-body">
-                    <p>${gif.title}</p>
-                    <i class="far fa-heart"></i>
-                </div>
-            </li>
-            `;
-            });
-            output += '</ul>';
-            this.gifsView.render(output);
+        this.gifModel.search(search).then(results => {
+            this.gifsView.render(results);
+            this.gifsView.listen();
         });
     };
 
-    saveGif(id) {
+    getfavouriteGifs() {
+        const results = this.gifModel.getLocalStorage('gifs');
+        this.gifsView.render(results);
+    };
+
+    saveGif(gif) {
         if (storageAvailable('localStorage')) {
-            model.save(id);
+            this.gifModel.insert(gif);
           }
           else {
-            console.log('no storage !')
+            console.log('no storage available !')
           }
     }
 };

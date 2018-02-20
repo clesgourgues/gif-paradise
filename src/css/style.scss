@@ -1,4 +1,4 @@
-$color-bg: #F5F0F2;
+$color-bg: #EEE1D0;
 $color-blue: #198FE3;
 $color-red: #e12D53;
 $color-header: #fff;
@@ -63,13 +63,14 @@ h1 {
 
 .card {
     /* Add shadows to create the "card" effect */
+    align-self: start;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
     width: 200px;
+    background: #FFF;
 }
 
 .card img {
-    // width: 150px;
     outline: none;
 	border: none;
 	display: block;

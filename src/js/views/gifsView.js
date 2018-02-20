@@ -3,7 +3,7 @@ import router from '../controllers/routeController';
 import { on } from '../helpers/events';
 
 export default class GifsView {
-    
+
     init() {
         const searchForm = document.getElementById('search-form');
         const searchInput = document.getElementById('search-input');
@@ -11,10 +11,11 @@ export default class GifsView {
 
         // how to render considering the route
         let route = router.getRoute();
+        console.log('route :', route)
         let search = window.location.search;
 
-        if (route === 'favourites') {
-            console.log('favourites')
+        if (route === '/favourites') {
+            app.getfavouriteGifs();
         } else if (search.length > 0) {
             const searchTerm = search.split('=')[1];
             searchInput.value = searchTerm;
@@ -43,7 +44,39 @@ export default class GifsView {
 
     };
 
-    render(output) {
-        document.getElementById('results').innerHTML = output;
+    listen() {
+        const gifs = document.querySelectorAll("ul li div i");
+        gifs.forEach(gif => {
+            on(gif, 'click', e => {
+                let obj = {}
+                obj.url = e.path[2].firstElementChild.currentSrc
+                obj.title = e.path[2].firstElementChild.alt
+                obj.id = e.path[2].dataset.id
+                obj.favourite = true
+                console.log(obj)
+                app.saveGif(obj)
+            });
+        });
+    };
+
+    render(results) {
+        if (typeof results === "string") {
+            document.getElementById('results').innerHTML = results;
+        } else {
+            let output = `<p class="small-text">We found ${results.length} gifs for you !</p><ul id="grid" class="card-container">`;
+            results.forEach(gif => {
+                output += `
+        <li class="card" data-id="${gif.id}">
+            <img src="${gif.url}" alt="${gif.title}">
+            <div class="card-body">
+                <p>${gif.title}</p>
+                <i class="far fa-heart"></i>
+            </div>
+        </li>
+        `;
+            });
+            output += '</ul>';
+            document.getElementById('results').innerHTML = output;
+        }
     };
 };
