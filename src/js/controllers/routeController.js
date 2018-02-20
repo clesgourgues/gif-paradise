@@ -10,10 +10,7 @@ export default {
         window.location = `/?q=${search}`;
     },
 
-    resetSearch(form, button, input) {
-        form.reset();
-        button.style.visibility = "hidden";
-        input.focus();
+    resetSearch() {
         history.pushState(null, null, '/');
         window.location = '/';
     }

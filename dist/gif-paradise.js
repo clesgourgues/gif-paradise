@@ -69,7 +69,7 @@ require = (function (modules, cache, entry) {
 
   // Override the current require with this new one
   return newRequire;
-})({11:[function(require,module,exports) {
+})({20:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -84,15 +84,12 @@ exports.default = {
         history.pushState(search, null, '?q=' + search);
         window.location = '/?q=' + search;
     },
-    resetSearch: function resetSearch(form, button, input) {
-        form.reset();
-        button.style.visibility = "hidden";
-        input.focus();
+    resetSearch: function resetSearch() {
         history.pushState(null, null, '/');
         window.location = '/';
     }
 };
-},{}],5:[function(require,module,exports) {
+},{}],9:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -103,7 +100,7 @@ var on = function on(target, event, handler) {
 };
 
 exports.on = on;
-},{}],7:[function(require,module,exports) {
+},{}],12:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -129,6 +126,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var GifsView = function () {
     function GifsView() {
         _classCallCheck(this, GifsView);
+
+        this.searchForm = document.getElementById('search-form');
+        this.searchInput = document.getElementById('search-input');
+        this.deleteBtn = document.getElementById('delete-btn');
     }
 
     _createClass(GifsView, [{
@@ -136,42 +137,47 @@ var GifsView = function () {
         value: function init() {
             var _this = this;
 
-            var searchForm = document.getElementById('search-form');
-            var searchInput = document.getElementById('search-input');
-            var deleteBtn = document.getElementById('delete-btn');
-
-            // how to render considering the route
             var route = _routeController2.default.getRoute();
-            console.log('route :', route);
             var search = window.location.search;
 
-            if (route === '/favourites') {
-                _app2.default.getfavouriteGifs();
-            } else if (search.length > 0) {
-                var searchTerm = search.split('=')[1];
-                searchInput.value = searchTerm;
-                deleteBtn.style.visibility = "visible";
-                _app2.default.getGifs(searchTerm);
-            } else {
-                this.message('<p>pas de recherche en cours</p>');
-            }
+            this.nav(route, search);
 
-            // add event listeners that change routes - todo : functions in controller
-            (0, _events.on)(searchForm, "submit", function (e) {
+            (0, _events.on)(this.searchForm, "submit", function (e) {
                 e.preventDefault();
                 var searchTerm = e.target[1].value;
                 _routeController2.default.setRoute(searchTerm);
                 _this.init();
             });
 
-            (0, _events.on)(deleteBtn, "click", function (e) {
-                _routeController2.default.resetSearch(searchForm, deleteBtn, searchInput);
+            (0, _events.on)(this.deleteBtn, "click", function (e) {
+                _this.searchForm.reset();
+                _this.deleteBtn.style.visibility = "hidden";
+                _this.searchInput.focus();
+                _routeController2.default.resetSearch();
                 _this.init();
             });
 
-            (0, _events.on)(searchInput, "keydown", function (e) {
-                deleteBtn.style.visibility = "visible";
+            (0, _events.on)(window, 'popstate', function (e) {
+                console.log('coucou');
             });
+
+            (0, _events.on)(this.searchInput, "keydown", function (e) {
+                _this.deleteBtn.style.visibility = "visible";
+            });
+        }
+    }, {
+        key: 'nav',
+        value: function nav(route, search) {
+            if (route === '/favourites') {
+                _app2.default.getfavouriteGifs();
+            } else if (search.length > 0) {
+                var searchTerm = search.split('=')[1];
+                this.searchInput.value = searchTerm;
+                this.deleteBtn.style.visibility = "visible";
+                _app2.default.getGifs(searchTerm);
+            } else {
+                this.message('<p>Type your search, we will find gif stuff for you !</p>');
+            }
         }
     }, {
         key: 'message',
@@ -194,7 +200,6 @@ var GifsView = function () {
                         gif.classList.add("favourite");
                         _app2.default.saveGif(obj);
                     } else {
-                        console.log('coucou');
                         gif.classList.remove("favourite");
                         _app2.default.deleteGif(obj);
                     }
@@ -209,7 +214,7 @@ var GifsView = function () {
             } else {
                 var output = '<ul id="grid" class="card-container">';
                 results.forEach(function (gif) {
-                    output += '\n        <li class="card" data-id="' + gif.id + '">\n            <img src="' + gif.url + '" alt="' + gif.title + '">\n            <div class="card-body">\n                <p>' + gif.title + '</p>\n                <i class="far fa-heart ' + (gif.favourite ? 'favourite' : '') + ' "></i>\n            </div>\n        </li>\n        ';
+                    output += '\n        <li class="card" data-id="' + gif.id + '">\n            <img src="' + gif.url + '" alt="' + gif.title + '">\n            <div class="card-body">\n                <p>' + gif.title + '</p>\n                <i class="fas fa-heart ' + (gif.favourite ? 'favourite' : '') + ' "></i>\n            </div>\n        </li>\n        ';
                 });
                 output += '</ul>';
                 document.getElementById('results').innerHTML = output;
@@ -222,7 +227,7 @@ var GifsView = function () {
 
 exports.default = GifsView;
 ;
-},{"../app":4,"../controllers/routeController":11,"../helpers/events":5}],9:[function(require,module,exports) {
+},{"../app":7,"../controllers/routeController":20,"../helpers/events":9}],14:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -265,7 +270,6 @@ var GifModel = function () {
 					obj.title = gif.title;
 					obj.id = gif.id;
 					obj.favourite = ids.indexOf(gif.id) > -1;
-					console.log(obj.favourite);
 					return obj;
 				});
 			}).catch(function (err) {
@@ -274,27 +278,19 @@ var GifModel = function () {
 		}
 	}, {
 		key: 'insert',
-		value: function insert(gif, callback) {
+		value: function insert(gif) {
 			var favouriteGifs = this.getLocalStorage('gifs');
 			favouriteGifs.push(gif);
 			this.setLocalStorage('gifs', JSON.stringify(favouriteGifs));
-			if (callback) {
-				callback();
-			}
 		}
 	}, {
 		key: 'remove',
-		value: function remove(gif, callback) {
+		value: function remove(gif) {
 			var favouriteGifs = this.getLocalStorage('gifs');
 			var filteredGifs = favouriteGifs.filter(function (favourite) {
 				return favourite.id !== gif.id;
 			});
-			console.log(filteredGifs);
 			this.setLocalStorage('gifs', JSON.stringify(filteredGifs));
-
-			if (callback) {
-				callback();
-			}
 		}
 	}]);
 
@@ -302,7 +298,7 @@ var GifModel = function () {
 }();
 
 exports.default = GifModel;
-},{}],12:[function(require,module,exports) {
+},{}],21:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -331,7 +327,7 @@ function storageAvailable(type) {
         storage.length !== 0;
     };
 };
-},{}],8:[function(require,module,exports) {
+},{}],13:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -376,7 +372,7 @@ var GifController = function () {
 
             this.gifModel.search(search).then(function (results) {
                 _this.gifsView.render(results);
-                _this.gifsView.message('<p>We found ' + results.length + ' Gifs for you !</p>');
+                _this.gifsView.message('<p>We found ' + results.length + ' Gifs for you ! Click on their  <i class="fas fa-heart"></i>  to save your favorites ones.</p>');
                 _this.gifsView.listen();
             });
         }
@@ -385,7 +381,7 @@ var GifController = function () {
         value: function getfavouriteGifs() {
             var results = this.gifModel.getLocalStorage('gifs');
             this.gifsView.render(results);
-            this.gifsView.message('<p>You have ' + results.length + ' favourites !</p>');
+            this.gifsView.message('<p>You have ' + results.length + ' favourites gifs! Click on their  <i class="fas fa-heart favourite"></i>  if you changed your mind.</p>');
             this.gifsView.listen();
         }
     }, {
@@ -401,6 +397,7 @@ var GifController = function () {
         key: 'deleteGif',
         value: function deleteGif(gif) {
             this.gifModel.remove(gif);
+            this.getfavouriteGifs();
         }
     }]);
 
@@ -409,7 +406,7 @@ var GifController = function () {
 
 exports.default = GifController;
 ;
-},{"../helpers/storageAvailable":12,"../views/gifsView":7,"../models/gifModel":9}],4:[function(require,module,exports) {
+},{"../helpers/storageAvailable":21,"../views/gifsView":12,"../models/gifModel":14}],7:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -436,7 +433,7 @@ var gifModel = new _gifModel2.default();
 var app = new _gifController2.default(gifsView, gifModel);
 
 exports.default = app;
-},{"./views/gifsView":7,"./models/gifModel":9,"./controllers/gifController":8}],10:[function(require,module,exports) {
+},{"./views/gifsView":12,"./models/gifModel":14,"./controllers/gifController":13}],24:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -467,7 +464,7 @@ function getBaseURL(url) {
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
 
-},{}],6:[function(require,module,exports) {
+},{}],18:[function(require,module,exports) {
 var bundle = require('./bundle-url');
 
 function updateLink(link) {
@@ -499,13 +496,13 @@ function reloadCSS() {
 
 module.exports = reloadCSS;
 
-},{"./bundle-url":10}],3:[function(require,module,exports) {
+},{"./bundle-url":24}],6:[function(require,module,exports) {
 
         var reloadCSS = require('_css_loader');
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":6}],2:[function(require,module,exports) {
+},{"_css_loader":18}],4:[function(require,module,exports) {
 'use strict';
 
 var _app = require('./src/js/app');
@@ -526,7 +523,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (0, _events.on)(window, 'hashchange', function () {
   return _app2.default.init();
 });
-},{"./src/js/app":4,"./src/css/style.scss":3,"./src/js/helpers/events":5}],17:[function(require,module,exports) {
+},{"./src/js/app":7,"./src/css/style.scss":6,"./src/js/helpers/events":9}],33:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -546,7 +543,7 @@ module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
-  var ws = new WebSocket('ws://' + hostname + ':' + '55340' + '/');
+  var ws = new WebSocket('ws://' + hostname + ':' + '56059' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -647,5 +644,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[17,2])
+},{}]},{},[33,4])
 //# sourceMappingURL=/dist/gif-paradise.map

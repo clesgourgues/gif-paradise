@@ -6,31 +6,35 @@ $color-text: #333;
 
 body {
     background-color: $color-bg;
-    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-family: 'Open Sans Condensed', sans-serif;
     color: $color-text;
 }
 
 h1 {
-    background-color: $color-bg;
-    font-family: 'Bungee Shade', cursive;
-    font-size: 5em;
-    margin-top : 50px;
-    color: $color-red;
-    display: block;
-    text-align : center;
+    font-size: 2em;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.container {
+    display: grid;
+
+    grid-template-rows: 40px 20% 1fr;
+    justify-items: stretch;
+    align-items: center;
 }
 
 #favourites {
-    position : absolute;
-    top: 30px;
-    right: 30px;
+    justify-self: end;
+    color: $color-text;
+    padding: 20px;
 }
 
-#favourites a:hover, i.favourite {
+#favourites a:hover, #favourites a:active, i.favourite {
     color: $color-red;
 }
 
-#search-form {
+#search-container {
     width: 50%;
     margin-left: auto;
     margin-right: auto;
@@ -50,7 +54,7 @@ h1 {
 
 .card-container {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     grid-gap: 20px 20px;
     justify-items: stretch;
     align-items: stretch;
@@ -61,11 +65,11 @@ h1 {
 }
 
 .card {
-    /* Add shadows to create the "card" effect */
     align-self: start;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
     width: 200px;
+    height: 280px;
     background: #FFF;
 }
 
@@ -73,20 +77,19 @@ h1 {
     outline: none;
 	border: none;
 	display: block;
-	width: 200px;
+    width: 200px;
+    height: 200px;
 }
 
-/* On mouse-over, add a deeper shadow */
 .card:hover {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
-/* Add some padding inside the card container */
 .card-body{
-    padding: 2px 16px;
+    padding: 4px 20px;
     display: grid;
-    grid-template-columns: 90% 1fr;
-    grid-gap-columns: 10px;
+    grid-template-columns: 85% 1fr;
+    grid-gap: 10px;
     align-items: center;
 }
 
@@ -105,7 +108,8 @@ h1 {
 input {
     border: none;
     flex-basis: 80%;
-    font-size : 1.2em;
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-size : 1.5em;
 }
 
 input:focus {

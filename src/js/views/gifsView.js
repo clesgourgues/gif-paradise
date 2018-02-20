@@ -4,44 +4,55 @@ import { on } from '../helpers/events';
 
 export default class GifsView {
 
-    init() {
-        const searchForm = document.getElementById('search-form');
-        const searchInput = document.getElementById('search-input');
-        const deleteBtn = document.getElementById('delete-btn');
+    constructor() {
+        this.searchForm = document.getElementById('search-form');
+        this.searchInput = document.getElementById('search-input');
+        this.deleteBtn = document.getElementById('delete-btn');
+    };
 
-        // how to render considering the route
+    init() {
         let route = router.getRoute();
         let search = window.location.search;
 
-        if (route === '/favourites') {
-            app.getfavouriteGifs();
-        } else if (search.length > 0) {
-            const searchTerm = search.split('=')[1];
-            searchInput.value = searchTerm;
-            deleteBtn.style.visibility = "visible";
-            app.getGifs(searchTerm);
-        } else {
-            this.message('<p>pas de recherche en cours</p>');
-        }
+        this.nav(route, search);
 
-        // add event listeners that change routes - todo : functions in controller
-        on(searchForm, "submit", e => {
+        on(this.searchForm, "submit", e => {
             e.preventDefault();
             const searchTerm = e.target[1].value;
             router.setRoute(searchTerm);
             this.init();
         })
 
-        on(deleteBtn, "click", e => {
-            router.resetSearch(searchForm, deleteBtn, searchInput);
+        on(this.deleteBtn, "click", e => {
+            this.searchForm.reset();
+            this.deleteBtn.style.visibility = "hidden";
+            this.searchInput.focus();
+            router.resetSearch();
             this.init();
         })
 
-        on(searchInput, "keydown", e => {
-            deleteBtn.style.visibility = "visible";
+        on(window, 'popstate', e => {
+            console.log('coucou')
+        })
+
+        on(this.searchInput, "keydown", e => {
+            this.deleteBtn.style.visibility = "visible";
         })
 
     };
+
+    nav(route, search) {
+        if (route === '/favourites') {
+            app.getfavouriteGifs();
+        } else if (search.length > 0) {
+            const searchTerm = search.split('=')[1];
+            this.searchInput.value = searchTerm;
+            this.deleteBtn.style.visibility = "visible";
+            app.getGifs(searchTerm);
+        } else {
+            this.message('<p>Type your search, we will find gif stuff for you !</p>');
+        }
+    }
 
     message(string) {
         document.getElementById('message').innerHTML = string;
@@ -79,7 +90,7 @@ export default class GifsView {
             <img src="${gif.url}" alt="${gif.title}">
             <div class="card-body">
                 <p>${gif.title}</p>
-                <i class="far fa-heart ${gif.favourite ? 'favourite' : ''} "></i>
+                <i class="fas fa-heart ${gif.favourite ? 'favourite' : ''} "></i>
             </div>
         </li>
         `;

@@ -25,32 +25,22 @@ export default class GifModel {
 					obj.title = gif.title
 					obj.id = gif.id
 					obj.favourite = ids.indexOf(gif.id) > -1
-					console.log(obj.favourite)
 					return obj
 				})
 			})
 			.catch(err => console.log(err));
 	}
 
-
-	insert(gif, callback) {
+	insert(gif) {
 		let favouriteGifs = this.getLocalStorage('gifs');
 		favouriteGifs.push(gif);
 		this.setLocalStorage('gifs', JSON.stringify(favouriteGifs));
-		if (callback) {
-			callback();
-		}
 	}
 
-	remove(gif, callback) {
+	remove(gif) {
 		let favouriteGifs = this.getLocalStorage('gifs')
 		let filteredGifs = favouriteGifs.filter(favourite => favourite.id !== gif.id)
-		console.log(filteredGifs)
 		this.setLocalStorage('gifs', JSON.stringify(filteredGifs));
-
-		if (callback) {
-			callback();
-		}
 	}
 
 }
