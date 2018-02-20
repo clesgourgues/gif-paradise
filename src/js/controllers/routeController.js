@@ -7,6 +7,7 @@ export default {
 
     setRoute(search) {
         history.pushState(search, null, `?q=${search}`);
+        window.location = `/?q=${search}`;
     },
 
     resetSearch(form, button, input) {

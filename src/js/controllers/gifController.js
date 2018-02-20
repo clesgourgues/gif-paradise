@@ -17,6 +17,7 @@ export default class GifController {
     getGifs(search) {
         this.gifModel.search(search).then(results => {
             this.gifsView.render(results);
+            this.gifsView.message(`<p>We found ${results.length} Gifs for you !</p>`);
             this.gifsView.listen();
         });
     };
@@ -24,6 +25,7 @@ export default class GifController {
     getfavouriteGifs() {
         const results = this.gifModel.getLocalStorage('gifs');
         this.gifsView.render(results);
+        this.gifsView.message(`<p>You have ${results.length} favourites !</p>`)
     };
 
     saveGif(gif) {

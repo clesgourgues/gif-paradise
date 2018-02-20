@@ -22,7 +22,7 @@ export default class GifsView {
             deleteBtn.style.visibility = "visible";
             app.getGifs(searchTerm);
         } else {
-            this.render('<p>pas de recherche en cours</p>');
+            this.message('<p>pas de recherche en cours</p>');
         }
 
         // add event listeners that change routes
@@ -44,10 +44,15 @@ export default class GifsView {
 
     };
 
+    message(string) {
+        document.getElementById('message').innerHTML = string;
+    }
+
     listen() {
         const gifs = document.querySelectorAll("ul li div i");
         gifs.forEach(gif => {
             on(gif, 'click', e => {
+                //class favourite true ? alors on remove
                 let obj = {}
                 obj.url = e.path[2].firstElementChild.currentSrc
                 obj.title = e.path[2].firstElementChild.alt
@@ -63,14 +68,14 @@ export default class GifsView {
         if (typeof results === "string") {
             document.getElementById('results').innerHTML = results;
         } else {
-            let output = `<p class="small-text">We found ${results.length} gifs for you !</p><ul id="grid" class="card-container">`;
+            let output = `<ul id="grid" class="card-container">`;
             results.forEach(gif => {
                 output += `
         <li class="card" data-id="${gif.id}">
             <img src="${gif.url}" alt="${gif.title}">
             <div class="card-body">
                 <p>${gif.title}</p>
-                <i class="far fa-heart"></i>
+                <i class="far fa-heart ${gif.favourite ? 'favourite' : ''} "></i>
             </div>
         </li>
         `;

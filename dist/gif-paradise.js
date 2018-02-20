@@ -69,7 +69,7 @@ require = (function (modules, cache, entry) {
 
   // Override the current require with this new one
   return newRequire;
-})({13:[function(require,module,exports) {
+})({11:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -82,6 +82,7 @@ exports.default = {
     },
     setRoute: function setRoute(search) {
         history.pushState(search, null, '?q=' + search);
+        window.location = '/?q=' + search;
     },
     resetSearch: function resetSearch(form, button, input) {
         form.reset();
@@ -102,7 +103,7 @@ var on = function on(target, event, handler) {
 };
 
 exports.on = on;
-},{}],6:[function(require,module,exports) {
+},{}],7:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -152,7 +153,7 @@ var GifsView = function () {
                 deleteBtn.style.visibility = "visible";
                 _app2.default.getGifs(searchTerm);
             } else {
-                this.render('<p>pas de recherche en cours</p>');
+                this.message('<p>pas de recherche en cours</p>');
             }
 
             // add event listeners that change routes
@@ -173,11 +174,17 @@ var GifsView = function () {
             });
         }
     }, {
+        key: 'message',
+        value: function message(string) {
+            document.getElementById('message').innerHTML = string;
+        }
+    }, {
         key: 'listen',
         value: function listen() {
             var gifs = document.querySelectorAll("ul li div i");
             gifs.forEach(function (gif) {
                 (0, _events.on)(gif, 'click', function (e) {
+                    //class favourite true ? alors on remove
                     var obj = {};
                     obj.url = e.path[2].firstElementChild.currentSrc;
                     obj.title = e.path[2].firstElementChild.alt;
@@ -194,9 +201,9 @@ var GifsView = function () {
             if (typeof results === "string") {
                 document.getElementById('results').innerHTML = results;
             } else {
-                var output = '<p class="small-text">We found ' + results.length + ' gifs for you !</p><ul id="grid" class="card-container">';
+                var output = '<ul id="grid" class="card-container">';
                 results.forEach(function (gif) {
-                    output += '\n        <li class="card" data-id="' + gif.id + '">\n            <img src="' + gif.url + '" alt="' + gif.title + '">\n            <div class="card-body">\n                <p>' + gif.title + '</p>\n                <i class="far fa-heart"></i>\n            </div>\n        </li>\n        ';
+                    output += '\n        <li class="card" data-id="' + gif.id + '">\n            <img src="' + gif.url + '" alt="' + gif.title + '">\n            <div class="card-body">\n                <p>' + gif.title + '</p>\n                <i class="far fa-heart ' + (gif.favourite ? 'favourite' : '') + ' "></i>\n            </div>\n        </li>\n        ';
                 });
                 output += '</ul>';
                 document.getElementById('results').innerHTML = output;
@@ -209,7 +216,7 @@ var GifsView = function () {
 
 exports.default = GifsView;
 ;
-},{"../app":4,"../controllers/routeController":13,"../helpers/events":5}],12:[function(require,module,exports) {
+},{"../app":3,"../controllers/routeController":11,"../helpers/events":5}],8:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -227,7 +234,6 @@ var GifModel = function () {
 		var localStorage = window.localStorage;
 		var favouriteGifs = void 0;
 		this.getLocalStorage = function (state) {
-			console.log(localStorage.getItem(state));
 			return favouriteGifs || JSON.parse(localStorage.getItem(state) || '[]');
 		};
 		this.setLocalStorage = function (state, item) {
@@ -238,16 +244,22 @@ var GifModel = function () {
 	_createClass(GifModel, [{
 		key: 'search',
 		value: function search(searchTerm) {
+			var _this = this;
+
 			return fetch('https://api.giphy.com/v1/gifs/search?api_key=v2k68wqUjqUfJLvBHOXNu6i2fCZiqNV5&q=' + searchTerm + '&limit=25&offset=0&rating=G&lang=en').then(function (res) {
 				return res.json();
 			}).then(function (data) {
 				return data.data.map(function (gif) {
+					var favouriteGifs = _this.getLocalStorage('gifs');
+					var ids = favouriteGifs.map(function (favourite) {
+						return favourite.id;
+					});
 					var obj = {};
 					obj.url = gif.images.original.url;
 					obj.title = gif.title;
 					obj.id = gif.id;
-					obj.favourite = false;
-					// si l'id dans les favourites favourites : true
+					obj.favourite = ids.indexOf(gif.id) > -1;
+					console.log(obj.favourite);
 					return obj;
 				});
 			}).catch(function (err) {
@@ -255,56 +267,31 @@ var GifModel = function () {
 			});
 		}
 	}, {
-		key: 'find',
-		value: function find(query, callback) {
-			var todos = this.getLocalStorage();
-			var k = void 0;
-
-			callback(todos.filter(function (todo) {
-				for (k in query) {
-					if (query[k] !== todo[k]) {
-						return false;
-					};
-				}
-				return true;
-			}));
-		}
-	}, {
 		key: 'insert',
 		value: function insert(gif, callback) {
 			var gifs = this.getLocalStorage('gifs');
-			console.log(gifs);
 			gifs.push(gif);
 			this.setLocalStorage('gifs', JSON.stringify(gifs));
 			if (callback) {
 				callback();
 			}
 		}
-
-		/**
-   * Remove items from the Store based on a query.
-   *
-   * @param {ItemQuery} query Query matching the items to remove
-   * @param {function(ItemList)|function()} [callback] Called when records matching query are removed
-   */
-
 	}, {
 		key: 'remove',
 		value: function remove(gif, callback) {
-
-			var todos = this.getLocalStorage().filter(function (gifs) {
-				for (k in query) {
-					if (query[k] !== todo[k]) {
+			var gifs = this.getLocalStorage('gifs').filter(function (gifs) {
+				for (k in gifs) {
+					if (gifs[k][id] !== gif[id]) {
 						return true;
 					}
 				}
 				return false;
 			});
 
-			this.setLocalStorage(gifs);
+			this.setLocalStorage('gifs', JSON.stringify(gifs));
 
 			if (callback) {
-				callback(todos);
+				callback();
 			}
 		}
 	}]);
@@ -313,7 +300,7 @@ var GifModel = function () {
 }();
 
 exports.default = GifModel;
-},{}],11:[function(require,module,exports) {
+},{}],12:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -342,7 +329,7 @@ function storageAvailable(type) {
         storage.length !== 0;
     };
 };
-},{}],7:[function(require,module,exports) {
+},{}],9:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -387,6 +374,7 @@ var GifController = function () {
 
             this.gifModel.search(search).then(function (results) {
                 _this.gifsView.render(results);
+                _this.gifsView.message('<p>We found ' + results.length + ' Gifs for you !</p>');
                 _this.gifsView.listen();
             });
         }
@@ -395,6 +383,7 @@ var GifController = function () {
         value: function getfavouriteGifs() {
             var results = this.gifModel.getLocalStorage('gifs');
             this.gifsView.render(results);
+            this.gifsView.message('<p>You have ' + results.length + ' favourites !</p>');
         }
     }, {
         key: 'saveGif',
@@ -412,7 +401,7 @@ var GifController = function () {
 
 exports.default = GifController;
 ;
-},{"../helpers/storageAvailable":11,"../views/gifsView":6,"../models/gifModel":12}],4:[function(require,module,exports) {
+},{"../helpers/storageAvailable":12,"../views/gifsView":7,"../models/gifModel":8}],3:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -439,7 +428,7 @@ var gifModel = new _gifModel2.default();
 var app = new _gifController2.default(gifsView, gifModel);
 
 exports.default = app;
-},{"./views/gifsView":6,"./models/gifModel":12,"./controllers/gifController":7}],9:[function(require,module,exports) {
+},{"./views/gifsView":7,"./models/gifModel":8,"./controllers/gifController":9}],10:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -470,7 +459,7 @@ function getBaseURL(url) {
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
 
-},{}],8:[function(require,module,exports) {
+},{}],6:[function(require,module,exports) {
 var bundle = require('./bundle-url');
 
 function updateLink(link) {
@@ -502,13 +491,13 @@ function reloadCSS() {
 
 module.exports = reloadCSS;
 
-},{"./bundle-url":9}],3:[function(require,module,exports) {
+},{"./bundle-url":10}],4:[function(require,module,exports) {
 
         var reloadCSS = require('_css_loader');
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":8}],2:[function(require,module,exports) {
+},{"_css_loader":6}],2:[function(require,module,exports) {
 'use strict';
 
 var _app = require('./src/js/app');
@@ -529,7 +518,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (0, _events.on)(window, 'hashchange', function () {
   return _app2.default.init();
 });
-},{"./src/js/app":4,"./src/css/style.scss":3,"./src/js/helpers/events":5}],20:[function(require,module,exports) {
+},{"./src/js/app":3,"./src/css/style.scss":4,"./src/js/helpers/events":5}],18:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -549,7 +538,7 @@ module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
-  var ws = new WebSocket('ws://' + hostname + ':' + '49307' + '/');
+  var ws = new WebSocket('ws://' + hostname + ':' + '57086' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -650,5 +639,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[20,2])
+},{}]},{},[18,2])
 //# sourceMappingURL=/dist/gif-paradise.map

@@ -4,7 +4,6 @@ export default class GifModel {
 		const localStorage = window.localStorage;
 		let favouriteGifs;
 		this.getLocalStorage = (state) => {
-			console.log(localStorage.getItem(state))
 			return favouriteGifs || JSON.parse(localStorage.getItem(state) || '[]');
 		};
 		this.setLocalStorage = (state, item) => {
@@ -19,35 +18,23 @@ export default class GifModel {
 			.then(res => res.json())
 			.then(data => {
 				return data.data.map(gif => {
+					let favouriteGifs = this.getLocalStorage('gifs');
+					const ids = favouriteGifs.map(favourite => favourite.id)
 					let obj = {}
 					obj.url = gif.images.original.url
 					obj.title = gif.title
 					obj.id = gif.id
-					obj.favourite = false
-					// si l'id dans les favourites favourites : true
+					obj.favourite = ids.indexOf(gif.id) > -1
+					console.log(obj.favourite)
 					return obj
 				})
 			})
 			.catch(err => console.log(err));
 	}
 
-	find(query, callback) {
-		const todos = this.getLocalStorage();
-		let k;
-
-		callback(todos.filter(todo => {
-			for (k in query) {
-				if (query[k] !== todo[k]) {
-					return false;
-				};
-			}
-			return true;
-		}));
-	}
 
 	insert(gif, callback) {
 		const gifs = this.getLocalStorage('gifs');
-		console.log(gifs)
 		gifs.push(gif);
 		this.setLocalStorage('gifs', JSON.stringify(gifs));
 		if (callback) {
@@ -55,27 +42,20 @@ export default class GifModel {
 		}
 	}
 
-	/**
-	 * Remove items from the Store based on a query.
-	 *
-	 * @param {ItemQuery} query Query matching the items to remove
-	 * @param {function(ItemList)|function()} [callback] Called when records matching query are removed
-	 */
 	remove(gif, callback) {
-
-		const todos = this.getLocalStorage().filter(gifs => {
-			for (k in query) {
-				if (query[k] !== todo[k]) {
+		const gifs = this.getLocalStorage('gifs').filter(gifs => {
+			for (k in gifs) {
+				if (gifs[k][id] !== gif[id]) {
 					return true;
 				}
 			}
 			return false;
 		});
 
-		this.setLocalStorage(gifs);
+		this.setLocalStorage('gifs', JSON.stringify(gifs));
 
 		if (callback) {
-			callback(todos);
+			callback();
 		}
 	}
 
