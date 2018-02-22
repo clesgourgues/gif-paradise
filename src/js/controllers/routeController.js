@@ -7,12 +7,11 @@ export default {
 
     setRoute(search) {
         history.pushState(search, null, `?q=${search}`);
-        window.location = `/?q=${search}`;
+        window.location.href = `/?q=${search}`;
     },
 
-    resetSearch() {
-        history.pushState(null, null, '/');
+    resetRoute() {
+        history.pushState(search, null, '/');
         window.location = '/';
     }
-
 }

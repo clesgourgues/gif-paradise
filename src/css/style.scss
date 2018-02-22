@@ -1,7 +1,5 @@
 $color-bg: #EEE1D0;
-$color-blue: #198FE3;
 $color-red: #e12D53;
-$color-header: #fff;
 $color-text: #333;
 
 body {
@@ -16,9 +14,12 @@ h1 {
     text-transform: uppercase;
 }
 
+a {
+    text-decoration : none;
+}
+
 .container {
     display: grid;
-
     grid-template-rows: 40px 20% 1fr;
     justify-items: stretch;
     align-items: center;
@@ -30,8 +31,23 @@ h1 {
     padding: 20px;
 }
 
-#favourites a:hover, #favourites a:active, i.favourite {
+#favourites a{
+    color: $color-text;
+}
+
+#favourites a:hover, #favourites a:active, i.favourite, p a.favourite {
     color: $color-red;
+}
+
+.baseline {
+    display: flex;
+    flex-flow : row;
+    justify-content: start;
+}
+
+.logo {
+    width : 100px;
+    height: 21px;
 }
 
 #search-container {
@@ -52,6 +68,10 @@ h1 {
     border-radius: 10px;
 }
 
+.default-results {
+    text-align: center;
+}
+
 .card-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -60,8 +80,6 @@ h1 {
     align-items: stretch;
     max-width: 69em;
 	list-style: none;
-	margin: 30px auto;
-	padding: 0;
 }
 
 .card {
@@ -89,8 +107,16 @@ h1 {
     padding: 4px 20px;
     display: grid;
     grid-template-columns: 85% 1fr;
-    grid-gap: 10px;
+    grid-template-rows: 40px 40px;
     align-items: center;
+}
+
+.favourite-message {
+    display:none;
+}
+
+p.favourite a {
+    color: $color-red;
 }
 
 .action{
@@ -116,4 +142,8 @@ input:focus {
     border: none;
     box-shadow: none !important;
     outline: none;
+  }
+
+  #back {
+      text-align : center;
   }

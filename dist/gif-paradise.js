@@ -69,7 +69,7 @@ require = (function (modules, cache, entry) {
 
   // Override the current require with this new one
   return newRequire;
-})({20:[function(require,module,exports) {
+})({13:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -82,14 +82,14 @@ exports.default = {
     },
     setRoute: function setRoute(search) {
         history.pushState(search, null, '?q=' + search);
-        window.location = '/?q=' + search;
+        window.location.href = '/?q=' + search;
     },
-    resetSearch: function resetSearch() {
-        history.pushState(null, null, '/');
+    resetRoute: function resetRoute() {
+        history.pushState(search, null, '/');
         window.location = '/';
     }
 };
-},{}],9:[function(require,module,exports) {
+},{}],7:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -100,7 +100,7 @@ var on = function on(target, event, handler) {
 };
 
 exports.on = on;
-},{}],12:[function(require,module,exports) {
+},{}],10:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -146,19 +146,18 @@ var GifsView = function () {
                 e.preventDefault();
                 var searchTerm = e.target[1].value;
                 _routeController2.default.setRoute(searchTerm);
-                _this.init();
             });
 
             (0, _events.on)(this.deleteBtn, "click", function (e) {
                 _this.searchForm.reset();
                 _this.deleteBtn.style.visibility = "hidden";
                 _this.searchInput.focus();
-                _routeController2.default.resetSearch();
-                _this.init();
+                _routeController2.default.resetRoute();
             });
 
-            (0, _events.on)(window, 'popstate', function (e) {
-                console.log('coucou');
+            (0, _events.on)(window, 'onpopstate', function (e) {
+                console.log("location: " + document.location + ", state: " + JSON.stringify(e.state));
+                // nav(route,search)
             });
 
             (0, _events.on)(this.searchInput, "keydown", function (e) {
@@ -169,12 +168,16 @@ var GifsView = function () {
         key: 'nav',
         value: function nav(route, search) {
             if (route === '/favourites') {
+                document.getElementById('favourites-icon').classList.add("favourite");
                 _app2.default.getfavouriteGifs();
-            } else if (search.length > 0) {
+            } else if (search.length > 3 && route === '/') {
+                console.log('serach ', search);
                 var searchTerm = search.split('=')[1];
                 this.searchInput.value = searchTerm;
                 this.deleteBtn.style.visibility = "visible";
                 _app2.default.getGifs(searchTerm);
+            } else if (search.length === 3) {
+                this.message('<p>Please enter something !</p>');
             } else {
                 this.message('<p>Type your search, we will find gif stuff for you !</p>');
             }
@@ -187,9 +190,10 @@ var GifsView = function () {
     }, {
         key: 'listen',
         value: function listen() {
-            var gifs = document.querySelectorAll("ul li div i");
+            var gifs = Array.from(document.querySelectorAll("ul li div i"));
             gifs.forEach(function (gif) {
                 (0, _events.on)(gif, 'click', function (e) {
+                    var route = _routeController2.default.getRoute();
                     var isFavourite = e.srcElement.classList[2] === "favourite";
                     var obj = {};
                     obj.url = e.path[2].firstElementChild.currentSrc;
@@ -198,10 +202,18 @@ var GifsView = function () {
                     if (!isFavourite) {
                         obj.favourite = true;
                         gif.classList.add("favourite");
+                        var favouritemessage = document.getElementById(obj.id);
+                        favouritemessage.classList.remove("favourite-message");
                         _app2.default.saveGif(obj);
                     } else {
                         gif.classList.remove("favourite");
                         _app2.default.deleteGif(obj);
+                        if (route === '/favourites') {
+                            _app2.default.getfavouriteGifs();
+                        } else {
+                            var _favouritemessage = document.getElementById(obj.id);
+                            _favouritemessage.classList.add("favourite-message");
+                        }
                     }
                 });
             });
@@ -209,14 +221,15 @@ var GifsView = function () {
     }, {
         key: 'render',
         value: function render(results) {
+            var route = _routeController2.default.getRoute();
             if (typeof results === "string") {
                 document.getElementById('results').innerHTML = results;
             } else {
                 var output = '<ul id="grid" class="card-container">';
                 results.forEach(function (gif) {
-                    output += '\n        <li class="card" data-id="' + gif.id + '">\n            <img src="' + gif.url + '" alt="' + gif.title + '">\n            <div class="card-body">\n                <p>' + gif.title + '</p>\n                <i class="fas fa-heart ' + (gif.favourite ? 'favourite' : '') + ' "></i>\n            </div>\n        </li>\n        ';
+                    output += '\n        <li class="card" data-id="' + gif.id + '">\n            <img src="' + gif.url + '" alt="' + gif.title + '">\n            <div class="card-body">\n                <p>' + gif.title + '</p>\n                <i class="fas fa-heart ' + (gif.favourite ? 'favourite' : '') + ' "></i>\n                <p id="' + gif.id + '" class="favourite ' + (!gif.favourite || route == '/favourites' ? 'favourite-message' : '') + '"><a href="/favourites">One of your favourites !</a></p>\n            </div>\n        </li>\n        ';
                 });
-                output += '</ul>';
+                output += '</ul>' + (route == '/favourites' ? '<a id="back">Back to your search</a>' : '');
                 document.getElementById('results').innerHTML = output;
             }
         }
@@ -227,7 +240,7 @@ var GifsView = function () {
 
 exports.default = GifsView;
 ;
-},{"../app":7,"../controllers/routeController":20,"../helpers/events":9}],14:[function(require,module,exports) {
+},{"../app":6,"../controllers/routeController":13,"../helpers/events":7}],8:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -298,7 +311,7 @@ var GifModel = function () {
 }();
 
 exports.default = GifModel;
-},{}],21:[function(require,module,exports) {
+},{}],12:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -327,7 +340,7 @@ function storageAvailable(type) {
         storage.length !== 0;
     };
 };
-},{}],13:[function(require,module,exports) {
+},{}],9:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -372,7 +385,7 @@ var GifController = function () {
 
             this.gifModel.search(search).then(function (results) {
                 _this.gifsView.render(results);
-                _this.gifsView.message('<p>We found ' + results.length + ' Gifs for you ! Click on their  <i class="fas fa-heart"></i>  to save your favorites ones.</p>');
+                _this.gifsView.message('<p>We found ' + results.length + ' Gifs for you !<br />Click on their  <i class="fas fa-heart"></i>  to save your favorites ones.</p>');
                 _this.gifsView.listen();
             });
         }
@@ -381,7 +394,13 @@ var GifController = function () {
         value: function getfavouriteGifs() {
             var results = this.gifModel.getLocalStorage('gifs');
             this.gifsView.render(results);
-            this.gifsView.message('<p>You have ' + results.length + ' favourites gifs! Click on their  <i class="fas fa-heart favourite"></i>  if you changed your mind.</p>');
+            var favouriteMessage = '';
+            if (results.length === 0) {
+                favouriteMessage = '<p>Oh! It seems you don\'t like gifs !</p>';
+            } else {
+                favouriteMessage = '<p>You have ' + results.length + ' favourites gifs!<br />Click on their  <i class="fas fa-heart favourite"></i>  if you changed your mind.</p>';
+            }
+            this.gifsView.message(favouriteMessage);
             this.gifsView.listen();
         }
     }, {
@@ -397,7 +416,6 @@ var GifController = function () {
         key: 'deleteGif',
         value: function deleteGif(gif) {
             this.gifModel.remove(gif);
-            this.getfavouriteGifs();
         }
     }]);
 
@@ -406,7 +424,7 @@ var GifController = function () {
 
 exports.default = GifController;
 ;
-},{"../helpers/storageAvailable":21,"../views/gifsView":12,"../models/gifModel":14}],7:[function(require,module,exports) {
+},{"../helpers/storageAvailable":12,"../views/gifsView":10,"../models/gifModel":8}],6:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -433,7 +451,7 @@ var gifModel = new _gifModel2.default();
 var app = new _gifController2.default(gifsView, gifModel);
 
 exports.default = app;
-},{"./views/gifsView":12,"./models/gifModel":14,"./controllers/gifController":13}],24:[function(require,module,exports) {
+},{"./views/gifsView":10,"./models/gifModel":8,"./controllers/gifController":9}],14:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -464,7 +482,7 @@ function getBaseURL(url) {
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
 
-},{}],18:[function(require,module,exports) {
+},{}],11:[function(require,module,exports) {
 var bundle = require('./bundle-url');
 
 function updateLink(link) {
@@ -496,13 +514,13 @@ function reloadCSS() {
 
 module.exports = reloadCSS;
 
-},{"./bundle-url":24}],6:[function(require,module,exports) {
+},{"./bundle-url":14}],5:[function(require,module,exports) {
 
         var reloadCSS = require('_css_loader');
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":18}],4:[function(require,module,exports) {
+},{"_css_loader":11}],2:[function(require,module,exports) {
 'use strict';
 
 var _app = require('./src/js/app');
@@ -523,7 +541,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (0, _events.on)(window, 'hashchange', function () {
   return _app2.default.init();
 });
-},{"./src/js/app":7,"./src/css/style.scss":6,"./src/js/helpers/events":9}],33:[function(require,module,exports) {
+},{"./src/js/app":6,"./src/css/style.scss":5,"./src/js/helpers/events":7}],23:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -543,7 +561,7 @@ module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
-  var ws = new WebSocket('ws://' + hostname + ':' + '56059' + '/');
+  var ws = new WebSocket('ws://' + hostname + ':' + '60029' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -644,5 +662,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[33,4])
+},{}]},{},[23,2])
 //# sourceMappingURL=/dist/gif-paradise.map

@@ -20,19 +20,18 @@ export default class GifsView {
             e.preventDefault();
             const searchTerm = e.target[1].value;
             router.setRoute(searchTerm);
-            this.init();
         })
 
         on(this.deleteBtn, "click", e => {
             this.searchForm.reset();
             this.deleteBtn.style.visibility = "hidden";
             this.searchInput.focus();
-            router.resetSearch();
-            this.init();
+            router.resetRoute();
         })
 
-        on(window, 'popstate', e => {
-            console.log('coucou')
+        on(window, 'onpopstate', e => {
+            console.log("location: " + document.location + ", state: " + JSON.stringify(e.state));
+            // nav(route,search)
         })
 
         on(this.searchInput, "keydown", e => {
@@ -43,12 +42,16 @@ export default class GifsView {
 
     nav(route, search) {
         if (route === '/favourites') {
+            document.getElementById('favourites-icon').classList.add("favourite");
             app.getfavouriteGifs();
-        } else if (search.length > 0) {
+        } else if (search.length > 3 && route === '/') {
+            console.log ('serach ', search)
             const searchTerm = search.split('=')[1];
             this.searchInput.value = searchTerm;
             this.deleteBtn.style.visibility = "visible";
             app.getGifs(searchTerm);
+        } else if(search.length === 3) {
+            this.message('<p>Please enter something !</p>');
         } else {
             this.message('<p>Type your search, we will find gif stuff for you !</p>');
         }
@@ -59,9 +62,10 @@ export default class GifsView {
     }
 
     listen() {
-        const gifs = document.querySelectorAll("ul li div i");
+        const gifs = Array.from(document.querySelectorAll("ul li div i"));
         gifs.forEach(gif => {
             on(gif, 'click', e => {
+                let route = router.getRoute();
                 let isFavourite = e.srcElement.classList[2] === "favourite"
                 let obj = {}
                 obj.url = e.path[2].firstElementChild.currentSrc
@@ -70,16 +74,25 @@ export default class GifsView {
                 if (!isFavourite) {
                     obj.favourite = true
                     gif.classList.add("favourite");
-                    app.saveGif(obj)
+                    let favouritemessage = document.getElementById(obj.id);
+                    favouritemessage.classList.remove("favourite-message");
+                    app.saveGif(obj);
                 } else {
                     gif.classList.remove("favourite");
                     app.deleteGif(obj)
+                    if (route === '/favourites') {
+                        app.getfavouriteGifs();
+                    } else {
+                        let favouritemessage = document.getElementById(obj.id);
+                        favouritemessage.classList.add("favourite-message");
+                    }
                 }
             });
         });
     };
 
     render(results) {
+        let route = router.getRoute();
         if (typeof results === "string") {
             document.getElementById('results').innerHTML = results;
         } else {
@@ -91,12 +104,14 @@ export default class GifsView {
             <div class="card-body">
                 <p>${gif.title}</p>
                 <i class="fas fa-heart ${gif.favourite ? 'favourite' : ''} "></i>
+                <p id="${gif.id}" class="favourite ${!gif.favourite || route == '/favourites' ? 'favourite-message' : ''}"><a href="/favourites">One of your favourites !</a></p>
             </div>
         </li>
         `;
             });
-            output += '</ul>';
+            output += `</ul>${route == '/favourites' ?'<a id="back">Back to your search</a>':''}`
             document.getElementById('results').innerHTML = output;
+
         }
     };
 };

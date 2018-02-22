@@ -13,14 +13,18 @@
 
 <body>
     <div class="container">
-        <div id="favourites">
+        <nav id="favourites">
             <a href="/favourites">
-                <i class="fas fa-heart fa-2x"></i>
+                <i id="favourites-icon" class="fas fa-heart fa-2x"></i>
             </a>
-        </div>
+        </nav>
         <div id="search-container">
             <div id="search">
                 <h1>Gif Paradise</h1>
+                <div class="baseline">
+                    <h3>Powered by</h3>
+                    <img class="logo" src="./src/css/giphy.png">
+                </div>
                 <form id="search-form">
                     <div class="form-group search-group">
                         <button type="submit" id="search-btn" class="action">
@@ -35,7 +39,11 @@
             </div>
             <div id="message"></div>
         </div>
-        <div id="results"></div>
+        <div id="results">
+            <div class="default-results">
+                <img src="https://media.giphy.com/media/xThta0XbpdzWZFK0z6/giphy.gif" />
+            </div>
+        </div>
     </div>
     <script src="./index.js"></script>
 </body>
