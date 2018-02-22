@@ -11,8 +11,8 @@ export default class GifsView {
     };
 
     init() {
-        let route = router.getRoute();
-        let search = window.location.search;
+        const route = router.getRoute();
+        const search = window.location.search;
 
         this.nav(route, search);
 
@@ -41,13 +41,17 @@ export default class GifsView {
         if (route === '/favourites') {
             document.getElementById('favourites-icon').classList.add("favourite");
             app.getfavouriteGifs();
+            var back = document.querySelector(".back");
+            on(back, "click", () => {
+                window.history.back();
+            })
         } else if (search.length > 3 && route === '/') {
             const searchTerm = search.split('=')[1];
             this.searchInput.value = searchTerm;
             this.deleteBtn.style.visibility = "visible";
             app.getGifs(searchTerm);
-        } else if(search.length === 3) {
-            this.message('<p>Please enter something !</p>');
+        } else if (search.length === 3) {
+            this.message('<p>Please tell us what to search !</p>');
         } else {
             this.message('<p>Type your search, we will find gif stuff for you !</p>');
         }
@@ -62,20 +66,20 @@ export default class GifsView {
         gifs.forEach(gif => {
             on(gif, 'click', e => {
                 let route = router.getRoute();
-                let isFavourite = e.srcElement.classList[2] === "favourite"
-                let obj = {}
-                obj.url = e.path[2].firstElementChild.currentSrc
-                obj.title = e.path[2].firstElementChild.alt
-                obj.id = e.path[2].dataset.id
+                let isFavourite = e.srcElement.classList[2] === "favourite";
+                let obj = {};
+                obj.url = e.path[2].firstElementChild.currentSrc;
+                obj.title = e.path[2].firstElementChild.alt;
+                obj.id = e.path[2].dataset.id;
                 if (!isFavourite) {
-                    obj.favourite = true
+                    obj.favourite = true;
                     gif.classList.add("favourite");
                     let favouritemessage = document.getElementById(obj.id);
                     favouritemessage.classList.remove("favourite-message");
                     app.saveGif(obj);
                 } else {
                     gif.classList.remove("favourite");
-                    app.deleteGif(obj)
+                    app.deleteGif(obj);
                     if (route === '/favourites') {
                         app.getfavouriteGifs();
                     } else {
@@ -88,15 +92,12 @@ export default class GifsView {
     };
 
     render(results) {
-        let route = router.getRoute();
-        if (typeof results === "string") {
-            document.getElementById('results').innerHTML = results;
-        } else {
-            let output = `<ul id="grid" class="card-container">`;
-            results.forEach(gif => {
-                output += `
+        const route = router.getRoute();
+        let output = `<ul id="grid" class="card-container">`;
+        results.forEach(gif => {
+            output += `
         <li class="card" data-id="${gif.id}">
-            <img src="${gif.url}" alt="${gif.title}">
+            <img class="loading" src="${gif.url}" alt="${gif.title}">
             <div class="card-body">
                 <p>${gif.title}</p>
                 <i class="fas fa-heart ${gif.favourite ? 'favourite' : ''} "></i>
@@ -104,10 +105,10 @@ export default class GifsView {
             </div>
         </li>
         `;
-            });
-            output += '</ul>'
-            document.getElementById('results').innerHTML = output;
-
-        }
+        });
+        output += '</ul>';
+        document.getElementById("results").innerHTML = output;
+        // const gifs = document.querySelectorAll(".loading");
+        // setTimeout(gifs.forEach(gif => gif.classList.remove("loading")), 3000);
     };
 };

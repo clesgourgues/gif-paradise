@@ -92,6 +92,14 @@ a {
     background: #FFF;
 }
 
+.loading {    
+    background-color: #ffffff;
+    background-image: url("http://loadinggif.com/images/image-selection/3.gif");
+    background-size: 25px 25px;
+    background-position:center;
+    background-repeat: no-repeat;
+}
+
 .card img {
     outline: none;
 	border: none;
@@ -148,4 +156,5 @@ input:focus {
 .back {
       text-decoration : underline;
       color: $color-text;
+      cursor: pointer;
   }

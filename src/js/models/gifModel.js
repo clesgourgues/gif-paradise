@@ -18,28 +18,28 @@ export default class GifModel {
 			.then(res => res.json())
 			.then(data => {
 				return data.data.map(gif => {
-					let favouriteGifs = this.getLocalStorage('gifs');
-					const ids = favouriteGifs.map(favourite => favourite.id)
-					let obj = {}
-					obj.url = gif.images.original.url
-					obj.title = gif.title
-					obj.id = gif.id
-					obj.favourite = ids.indexOf(gif.id) > -1
-					return obj
+					const favouriteGifs = this.getLocalStorage('gifs');
+					const ids = favouriteGifs.map(favourite => favourite.id);
+					let obj = {};
+					obj.url = gif.images.original.url;
+					obj.title = gif.title;
+					obj.id = gif.id;
+					obj.favourite = ids.indexOf(gif.id) > -1;
+					return obj;
 				})
 			})
 			.catch(err => console.log(err));
 	}
 
 	insert(gif) {
-		let favouriteGifs = this.getLocalStorage('gifs');
+		const favouriteGifs = this.getLocalStorage('gifs');
 		favouriteGifs.push(gif);
 		this.setLocalStorage('gifs', JSON.stringify(favouriteGifs));
 	}
 
 	remove(gif) {
-		let favouriteGifs = this.getLocalStorage('gifs')
-		let filteredGifs = favouriteGifs.filter(favourite => favourite.id !== gif.id)
+		const favouriteGifs = this.getLocalStorage('gifs');
+		const filteredGifs = favouriteGifs.filter(favourite => favourite.id !== gif.id);
 		this.setLocalStorage('gifs', JSON.stringify(filteredGifs));
 	}
 

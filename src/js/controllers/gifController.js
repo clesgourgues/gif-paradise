@@ -30,7 +30,7 @@ export default class GifController {
             favouriteMessage = '<p>Oh! It seems you don\'t like gifs !</p>'
         } else {
             favouriteMessage = `<p>You have ${results.length} favourites gifs!
-            <br />Click on their  <i class="fas fa-heart favourite"></i>  if you changed your mind or <a href="/" class="back">go back to your search</a></p>`
+            <br />Click on their  <i class="fas fa-heart favourite"></i>  if you changed your mind or <a class="back">go back to search</a></p>`
         }
         this.gifsView.message(favouriteMessage)
         this.gifsView.listen();
