@@ -22,19 +22,16 @@ export default class GifsView {
             router.setRoute(searchTerm);
         })
 
-        on(this.deleteBtn, "click", e => {
+        on(this.deleteBtn, "click", () => {
             this.searchForm.reset();
             this.deleteBtn.style.visibility = "hidden";
             this.searchInput.focus();
             router.resetRoute();
         })
 
-        on(window, 'onpopstate', e => {
-            console.log("location: " + document.location + ", state: " + JSON.stringify(e.state));
-            // nav(route,search)
-        })
+        on(window, 'hashchange', () => this.nav());
 
-        on(this.searchInput, "keydown", e => {
+        on(this.searchInput, "keydown", () => {
             this.deleteBtn.style.visibility = "visible";
         })
 
@@ -45,7 +42,6 @@ export default class GifsView {
             document.getElementById('favourites-icon').classList.add("favourite");
             app.getfavouriteGifs();
         } else if (search.length > 3 && route === '/') {
-            console.log ('serach ', search)
             const searchTerm = search.split('=')[1];
             this.searchInput.value = searchTerm;
             this.deleteBtn.style.visibility = "visible";
@@ -109,7 +105,7 @@ export default class GifsView {
         </li>
         `;
             });
-            output += `</ul>${route == '/favourites' ?'<a id="back">Back to your search</a>':''}`
+            output += '</ul>'
             document.getElementById('results').innerHTML = output;
 
         }

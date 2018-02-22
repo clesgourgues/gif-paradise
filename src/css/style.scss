@@ -9,9 +9,10 @@ body {
 }
 
 h1 {
-    font-size: 2em;
+    font-size: 3em;
     font-weight: 700;
     text-transform: uppercase;
+    text-align : center;
 }
 
 a {
@@ -144,6 +145,7 @@ input:focus {
     outline: none;
   }
 
-  #back {
-      text-align : center;
+.back {
+      text-decoration : underline;
+      color: $color-text;
   }
