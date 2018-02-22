@@ -69,7 +69,7 @@ require = (function (modules, cache, entry) {
 
   // Override the current require with this new one
   return newRequire;
-})({13:[function(require,module,exports) {
+})({12:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -93,13 +93,18 @@ exports.default = {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 var on = function on(target, event, handler) {
-    return target.addEventListener(event, handler);
+  return target.addEventListener(event, handler);
+};
+
+var el = function el(id) {
+  return document.getElementById(id);
 };
 
 exports.on = on;
+exports.el = el;
 },{}],6:[function(require,module,exports) {
 'use strict';
 
@@ -127,9 +132,9 @@ var GifsView = function () {
     function GifsView() {
         _classCallCheck(this, GifsView);
 
-        this.searchForm = document.getElementById('search-form');
-        this.searchInput = document.getElementById('search-input');
-        this.deleteBtn = document.getElementById('delete-btn');
+        this.searchForm = (0, _events.el)('search-form');
+        this.searchInput = (0, _events.el)('search-input');
+        this.deleteBtn = (0, _events.el)('delete-btn');
     }
 
     _createClass(GifsView, [{
@@ -167,7 +172,7 @@ var GifsView = function () {
         key: 'nav',
         value: function nav(route, search) {
             if (route === '/favourites') {
-                document.getElementById('favourites-icon').classList.add("favourite");
+                (0, _events.el)('favourites-icon').classList.add("favourite");
                 _app2.default.getfavouriteGifs();
                 var back = document.querySelector(".back");
                 (0, _events.on)(back, "click", function () {
@@ -187,7 +192,7 @@ var GifsView = function () {
     }, {
         key: 'message',
         value: function message(string) {
-            document.getElementById('message').innerHTML = string;
+            (0, _events.el)('message').innerHTML = string;
         }
     }, {
         key: 'listen',
@@ -204,7 +209,7 @@ var GifsView = function () {
                     if (!isFavourite) {
                         obj.favourite = true;
                         gif.classList.add("favourite");
-                        var favouritemessage = document.getElementById(obj.id);
+                        var favouritemessage = (0, _events.el)(obj.id);
                         favouritemessage.classList.remove("favourite-message");
                         _app2.default.saveGif(obj);
                     } else {
@@ -213,7 +218,7 @@ var GifsView = function () {
                         if (route === '/favourites') {
                             _app2.default.getfavouriteGifs();
                         } else {
-                            var _favouritemessage = document.getElementById(obj.id);
+                            var _favouritemessage = (0, _events.el)(obj.id);
                             _favouritemessage.classList.add("favourite-message");
                         }
                     }
@@ -229,9 +234,7 @@ var GifsView = function () {
                 output += '\n        <li class="card" data-id="' + gif.id + '">\n            <img class="loading" src="' + gif.url + '" alt="' + gif.title + '">\n            <div class="card-body">\n                <p>' + gif.title + '</p>\n                <i class="fas fa-heart ' + (gif.favourite ? 'favourite' : '') + ' "></i>\n                <p id="' + gif.id + '" class="favourite ' + (!gif.favourite || route == '/favourites' ? 'favourite-message' : '') + '"><a href="/favourites">One of your favourites !</a></p>\n            </div>\n        </li>\n        ';
             });
             output += '</ul>';
-            document.getElementById("results").innerHTML = output;
-            // const gifs = document.querySelectorAll(".loading");
-            // setTimeout(gifs.forEach(gif => gif.classList.remove("loading")), 3000);
+            (0, _events.el)("results").innerHTML = output;
         }
     }]);
 
@@ -240,7 +243,7 @@ var GifsView = function () {
 
 exports.default = GifsView;
 ;
-},{"../app":4,"../controllers/routeController":13,"../helpers/events":5}],7:[function(require,module,exports) {
+},{"../app":4,"../controllers/routeController":12,"../helpers/events":5}],7:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -311,7 +314,7 @@ var GifModel = function () {
 }();
 
 exports.default = GifModel;
-},{}],12:[function(require,module,exports) {
+},{}],10:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -424,7 +427,7 @@ var GifController = function () {
 
 exports.default = GifController;
 ;
-},{"../helpers/storageAvailable":12,"../views/gifsView":6,"../models/gifModel":7}],4:[function(require,module,exports) {
+},{"../helpers/storageAvailable":10,"../views/gifsView":6,"../models/gifModel":7}],4:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -482,7 +485,7 @@ function getBaseURL(url) {
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
 
-},{}],10:[function(require,module,exports) {
+},{}],9:[function(require,module,exports) {
 var bundle = require('./bundle-url');
 
 function updateLink(link) {
@@ -520,7 +523,7 @@ module.exports = reloadCSS;
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":10}],2:[function(require,module,exports) {
+},{"_css_loader":9}],2:[function(require,module,exports) {
 'use strict';
 
 var _app = require('./src/js/app');
@@ -538,7 +541,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (0, _events.on)(window, 'load', function () {
   return _app2.default.init();
 });
-},{"./src/js/app":4,"./src/css/style.scss":3,"./src/js/helpers/events":5}],14:[function(require,module,exports) {
+},{"./src/js/app":4,"./src/css/style.scss":3,"./src/js/helpers/events":5}],13:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -558,7 +561,7 @@ module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
-  var ws = new WebSocket('ws://' + hostname + ':' + '50908' + '/');
+  var ws = new WebSocket('ws://' + hostname + ':' + '59109' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -659,5 +662,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[14,2])
+},{}]},{},[13,2])
 //# sourceMappingURL=/dist/gif-paradise.map

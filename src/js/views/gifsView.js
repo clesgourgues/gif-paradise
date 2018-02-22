@@ -1,13 +1,13 @@
 import app from '../app';
 import router from '../controllers/routeController';
-import { on } from '../helpers/events';
+import { on, el } from '../helpers/events';
 
 export default class GifsView {
 
     constructor() {
-        this.searchForm = document.getElementById('search-form');
-        this.searchInput = document.getElementById('search-input');
-        this.deleteBtn = document.getElementById('delete-btn');
+        this.searchForm = el('search-form');
+        this.searchInput = el('search-input');
+        this.deleteBtn = el('delete-btn');
     };
 
     init() {
@@ -39,7 +39,7 @@ export default class GifsView {
 
     nav(route, search) {
         if (route === '/favourites') {
-            document.getElementById('favourites-icon').classList.add("favourite");
+            el('favourites-icon').classList.add("favourite");
             app.getfavouriteGifs();
             var back = document.querySelector(".back");
             on(back, "click", () => {
@@ -58,7 +58,7 @@ export default class GifsView {
     }
 
     message(string) {
-        document.getElementById('message').innerHTML = string;
+        el('message').innerHTML = string;
     }
 
     listen() {
@@ -74,7 +74,7 @@ export default class GifsView {
                 if (!isFavourite) {
                     obj.favourite = true;
                     gif.classList.add("favourite");
-                    let favouritemessage = document.getElementById(obj.id);
+                    let favouritemessage = el(obj.id);
                     favouritemessage.classList.remove("favourite-message");
                     app.saveGif(obj);
                 } else {
@@ -83,7 +83,7 @@ export default class GifsView {
                     if (route === '/favourites') {
                         app.getfavouriteGifs();
                     } else {
-                        let favouritemessage = document.getElementById(obj.id);
+                        let favouritemessage = el(obj.id);
                         favouritemessage.classList.add("favourite-message");
                     }
                 }
@@ -107,8 +107,6 @@ export default class GifsView {
         `;
         });
         output += '</ul>';
-        document.getElementById("results").innerHTML = output;
-        // const gifs = document.querySelectorAll(".loading");
-        // setTimeout(gifs.forEach(gif => gif.classList.remove("loading")), 3000);
+        el("results").innerHTML = output;
     };
 };
