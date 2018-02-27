@@ -2,9 +2,8 @@ import React from "react";
 import Header from './Header';
 import GifView from './GifView';
 import getGifs from '../Services/getGifs';
-import getfavouriteGifs from '../Services/getfavouriteGifs';
-import setfavouriteGif from '../Services/setfavouriteGifs';
-import deletefavouriteGif from '../Services/deletefavouriteGif';
+import getLocalStorage from '../Services/getLocalStorage';
+import setLocalStorage from '../Services/setLocalStorage';
 
 export default class GifApp extends React.Component {
     constructor() {
@@ -25,7 +24,6 @@ export default class GifApp extends React.Component {
 
     componentWillMount() {
         const searchTerm = window.location.search;
-        console.log(searchTerm)
         if (searchTerm === '') {
             this.setState({
                 message: 'Type your search, we will find gif stuff for you !'
@@ -37,8 +35,7 @@ export default class GifApp extends React.Component {
 
     searchGif = (searchTerm) => {
         getGifs(searchTerm).then(data => {
-            const favouriteGifs = getfavouriteGifs('gifs');
-            console.log('favoris :', favouriteGifs);
+            const favouriteGifs = getLocalStorage('gifs');
             const ids = favouriteGifs.map(favourite => favourite.id);
             const gifs = data.map(gif => {
                 let obj = {};
@@ -46,45 +43,61 @@ export default class GifApp extends React.Component {
                 obj.title = gif.title;
                 obj.id = gif.id;
                 obj.favourite = ids.indexOf(gif.id) > -1;
-                obj.favourite = false;
                 return obj;
             })
             this.setState({
-                gifs: gifs,
+                gifs,
                 search: searchTerm,
-                message: 'we found stuff for you'
+                message: `we found ${gifs.length} gifs for you`
             });
         })
     }
 
-    saveGif = (id) => {
-        const gif = {}
-        setfavouriteGif('gifs', gif)
-            .then((res) => {
-                this.state.data.push(res.data);
-                this.setState({ gifs: this.state.data });
-            });
-    }
-
-    deleteGif = (id) => {
-        const remainder = this.state.data.filter((gif) => {
-            if (gif.id !== id) return gif;
+    toggleGif  = (gif) => {
+        const nextGifs = this.state.gifs.map(stateGif => {
+            if (stateGif.id === gif.id) {
+                return {
+                    ...stateGif,
+                    favourite: !gif.favourite
+                }
+            } else { return stateGif }
+        }) 
+        if(gif.favourite) {
+            this.removeFavourite(gif)
+        } else {
+            this.insertFavourite(gif)
+        }
+        this.setState({
+            gifs: nextGifs,
+            message: `${gif.favourite ? 'Added' : 'Removed'} ${gif.title} from your favourites`
         });
-        deletefavouriteGif(id)
-            .then((res) => {
-                this.setState({ gifs: remainder });
-            })
     }
 
-    toggleGif = (id) => {
-        console.log(id);
+    insertFavourite = (gif) => {
+        const favouriteGifs = getLocalStorage('gifs');
+        gif.favourite = true
+        const favIds = favouriteGifs.map(gif => gif.id);
+        if (favIds.indexOf(gif.id) < 0) {
+            favouriteGifs.push(gif)
+        }
+        setLocalStorage('gifs', JSON.stringify(favouriteGifs));
+    }
+
+    removeFavourite = (gif) => {
+        gif.favourite = false
+        const favouriteGifs = getLocalStorage('gifs');
+        const filteredGifs = favouriteGifs.filter(favourite => favourite.id !== gif.id);
+        setLocalStorage('gifs', JSON.stringify(filteredGifs));
     }
 
     showFavourites = () => {
-        const favouriteGifs = getfavouriteGifs('gifs');
-        this.setState({
-            gifs: favouriteGifs
-        });
+        const favouriteGifs = getLocalStorage('gifs');
+        this.setState({ 
+            gifs: favouriteGifs,
+            message: favouriteGifs.length > 0 ? 
+            `You have ${favouriteGifs.length} favourite gifs !` : 
+            `Oh ! It seems you dont like gifs !`
+         });
 
     }
 
@@ -102,22 +115,22 @@ export default class GifApp extends React.Component {
         this.setState({
             gifs: [],
             search: '',
-            message: 'Type your search, we will find gif stuff for you !'
+            message: 'Type your search, we will find good gif stuff for you !'
         });
     }
 
     render() {
         return (
-            <div className="container">
+            <div className="container" >
                 <Header title={'Gif Paradise'}
                     handleSubmit={this.handleSubmit}
                     handleChange={this.handleChange}
                     reset={this.reset}
-                    searchTerm={this.state.searchTerm}
+                    search={this.state.search}
                     favourites={this.showFavourites}
                     message={this.state.message} />
-                <GifView gifs={this.state.gifs} toggle={this.toggleGif} />
-            </div>
+                <GifView gifs={this.state.gifs} toggleGif={this.toggleGif} />
+            </div >
         );
     }
 }

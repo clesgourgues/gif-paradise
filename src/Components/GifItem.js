@@ -1,14 +1,14 @@
 import React from "react";
 
-const GifItem = ({ gif, toggle }) => {
+const GifItem = ({ gif, toggleGif }) => {
     const iconClass = gif.favourite ? 'favourite' : '';
     return (
         <li className="card" key={gif.id}>
             <img className="loading" src={gif.url} alt={gif.title} />
             <div className="card-body">
                 <p>{gif.title}</p>
-                <i className={`fas fa-heart ${iconClass}`} onClick={() => { toggle(gif.id) }}></i>
-                <p className="favourite"><a href="/favourites">One of your favourites !</a></p>
+                <i className={`fas fa-heart ${iconClass}`} onClick={() => { toggleGif(gif) }}></i>
+                {gif.favourite ? <p className="favourite">One of your favourites !</p> :''}
             </div>
         </li>
     );

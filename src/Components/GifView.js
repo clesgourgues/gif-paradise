@@ -1,9 +1,8 @@
 import React from "react";
 import GifItem from './GifItem';
 
-
-const GifView = ({ gifs, toggle }) => {
-    const gifNode = gifs.map( gif => <GifItem gif={gif} key={gif.id} toggle={toggle} />)
+const GifView = ({ gifs, toggleGif }) => {
+    const gifNode = gifs.map( gif => <GifItem gif={gif} key={gif.id} toggleGif={toggleGif} />)
     return (<div className="results"><ul className="card-container">{gifNode}</ul></div>);
 }
 
