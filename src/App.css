@@ -1,0 +1,150 @@
+body {
+  background-color: #EEE1D0;
+  font-family: 'Open Sans Condensed', sans-serif;
+  color: #333;
+}
+
+h1 {
+  font-size: 3em;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align : center;
+}
+
+a {
+  text-decoration : none;
+}
+
+ .container {
+  display: grid;
+  grid-template-rows: 30% 1fr;
+  justify-items: stretch;
+  align-items: center;
+} 
+
+.search-container{
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.favourites {
+  justify-self: end;
+  color: #333;
+  padding: 20px;
+}
+
+.favourites a{
+  color: #333
+}
+
+.favourites a:hover, .favourites a:active, i.favourite, p a.favourite {
+  color: #e12D53;
+}
+
+.logo {
+  width : 100px;
+  height: 21px;
+}
+
+.search-group {
+  display: grid;
+  grid-template-columns: 1fr 80% 1fr;
+  justify-items: stretch;
+  align-items: center;
+  border: 3px solid #333;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.default-results {
+  text-align: center;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 20px 20px;
+  justify-items: stretch;
+  align-items: stretch;
+  max-width: 69em;
+list-style: none;
+}
+
+.card {
+  align-self: start;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 200px;
+  height: 280px;
+  background: #FFF;
+}
+
+.loading {    
+  background-color: #ffffff;
+  background-image: url("http://loadinggif.com/images/image-selection/3.gif");
+  background-size: 25px 25px;
+  background-position:center;
+  background-repeat: no-repeat;
+}
+
+.card img {
+  outline: none;
+border: none;
+display: block;
+  width: 200px;
+  height: 200px;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.card-body{
+  padding: 4px 20px;
+  display: grid;
+  grid-template-columns: 85% 1fr;
+  grid-template-rows: 40px 40px;
+  align-items: center;
+}
+
+.favourite-message {
+  display:none;
+}
+
+p.favourite a {
+  color: #e12D53;
+}
+
+.action{
+height: 40px;
+  background: transparent;
+  border-color: transparent;
+  border-style: none;
+  cursor: pointer;
+}
+
+#delete-btn {
+  visibility: hidden;
+}
+
+input {
+  border: none;
+  flex-basis: 80%;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size : 1.5em;
+}
+
+input:focus {
+  border: none;
+  box-shadow: none !important;
+  outline: none;
+}
+
+.back {
+    text-decoration : underline;
+    color: #333;
+    cursor: pointer;
+}
