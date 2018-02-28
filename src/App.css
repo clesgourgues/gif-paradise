@@ -105,7 +105,8 @@ display: block;
 .card-body{
   padding: 4px 20px;
   display: grid;
-  grid-template-columns: 85% 1fr;
+  grid-gap: 10px;
+  grid-template-columns: 75% 1fr 1fr;
   grid-template-rows: 40px 40px;
   align-items: center;
 }

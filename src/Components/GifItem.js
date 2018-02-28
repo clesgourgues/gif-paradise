@@ -1,4 +1,5 @@
 import React from "react";
+import Clipboard from 'react-clipboard.js';
 
 const GifItem = ({ gif, toggleGif }) => {
     const iconClass = gif.favourite ? 'favourite' : '';
@@ -8,7 +9,10 @@ const GifItem = ({ gif, toggleGif }) => {
             <div className="card-body">
                 <p>{gif.title}</p>
                 <i className={`fas fa-heart ${iconClass}`} onClick={() => { toggleGif(gif) }}></i>
-                {gif.favourite ? <p className="favourite">One of your favourites !</p> :''}
+                <Clipboard data-clipboard-text={gif.url}>
+                    <i className="fas fa-bookmark"></i>
+                </Clipboard>
+                {gif.favourite ? <p className="favourite">One of your favourites !</p> : ''}
             </div>
         </li>
     );

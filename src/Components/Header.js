@@ -6,7 +6,7 @@ import Message from './Message';
 
 const Header = ({ title, search, message, favourites, handleSubmit, handleChange, reset }) => (
     <div>
-        <ActionButton icon={'fas fa-heart fa-2x'} action={favourites} classButton={'favourites'} />
+        <ActionButton icon={'fas fa-heart fa-3x'} action={favourites} classButton={'favourites'} />
         <div className="search-container">
             <Title title={title} />
             <SearchForm search={search} handleChange={handleChange} handleSubmit={handleSubmit} reset={reset}/>

@@ -1,6 +1,7 @@
 const setLocalStorage = (state, item) => {
     const localStorage = window.localStorage;
-    localStorage.setItem(state, item);
+    const serializedState = JSON.stringify(item)
+    localStorage.setItem(state, serializedState);
 };
 
 export default setLocalStorage
