@@ -28,8 +28,9 @@ export default class GifApp extends React.Component {
         this.searchGif(search);
     }
 
+
     searchGif = (search) => {
-        const searchEngine = search === '' ? getGifs : getTrendingGifs;
+        const searchEngine = search === undefined ? getGifs : getTrendingGifs;
         searchEngine(search).then(data => {
             const ids = this.state.favourites.map(favourite => favourite.id);
             const gifs = data.map(gif => {
@@ -40,7 +41,10 @@ export default class GifApp extends React.Component {
                 obj.favourite = ids.indexOf(gif.id) > -1; // if the gif is in favourites, set favourite property to true
                 return obj;
             })
-            this.setState({ gifs });
+            const message = search === undefined ?
+                `Here are the <b>most trending Gifs.</b>Type your search to find your own !`:
+                `We found <b>${gifs.length} gifs</b> for you. Click on their <i class="fas fa-heart"></i> to save them in your favourites !`
+            this.setState({ gifs, message });
         })
     }
 
@@ -80,9 +84,9 @@ export default class GifApp extends React.Component {
                 <Header title={'Gif Paradise'} />
                 <Switch>
                     <Route exact path='/' render={() =>
-                        <Trending gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
+                        <Trending message={this.state.message} gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
                     <Route exact path='/?q=:search' render={() =>
-                        <Search gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
+                        <Search message={this.state.message} gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
                     <Route path="/favourites" render={() =>
                         <Favourites gifs={this.state.favourites} toggleGif={this.toggleGif} />} />
                     <Redirect from='*' to='/' />

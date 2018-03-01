@@ -7,6 +7,11 @@ const GifView = ({ gifs, toggleGif }) => {
     return (<div className="results"><ul className="card-container">{gifNode}</ul></div>);
 }
 
+GifView.propTypes = {
+    gifs: PropTypes.array.isRequired,
+    toggleGif: PropTypes.func.isRequired
+}
+
 export default GifView;
 
 

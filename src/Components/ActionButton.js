@@ -15,7 +15,7 @@ const ActionButton = ({ icon, action, classButton, tooltip, dataId }) => (
 
 ActionButton.propTypes = {
     icon: PropTypes.string.isRequired,
-    action: PropTypes.function,
+    action: PropTypes.func,
     classButton: PropTypes.string,
     tooltip: PropTypes.string,
     dataId: PropTypes.string,

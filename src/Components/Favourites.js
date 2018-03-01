@@ -18,4 +18,9 @@ const Favourites = ({ gifs, toggleGif }) => {
     )
 }
 
+Favourites.propTypes = {
+    gifs: PropTypes.array.isRequired,
+    toggleGif: PropTypes.func.isRequired
+}
+
 export default Favourites;
