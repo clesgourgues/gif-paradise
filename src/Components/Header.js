@@ -1,19 +1,16 @@
 import React from "react";
+import PropTypes from 'prop-types';
+import FavouritesNav from './FavouritesNav';
 import Title from './Title';
 import SearchForm from './SearchForm';
-import ActionButton from './ActionButton';
 import Message from './Message';
 
-const Header = ({ title, search, message, favourites, handleSubmit, handleChange, reset, page }) => (
+const Header = ({ title, message }) => (
     <div>
-        <ActionButton icon='fas fa-heart fa-3x'
-            action={favourites}
-            classButton='favourites'
-            tooltip='Show your favourite Gifs'
-            dataId='show-favourites' />
+        <FavouritesNav />
         <div className="search-container">
             <Title title={title} />
-            <SearchForm page={page} search={search} handleChange={handleChange} handleSubmit={handleSubmit} reset={reset} />
+            <SearchForm />
             <Message message={message} />
         </div>
     </div>

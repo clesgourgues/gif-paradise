@@ -1,10 +1,11 @@
 import React from "react";
+import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 
 const ActionButton = ({ icon, action, classButton, tooltip, dataId }) => (
     <div>
-        <button className={`action ${classButton}`} data-tip data-for={dataId}>
-            <i className={icon} onClick={action}></i>
+        <button onClick={action} className={`action ${classButton}`} data-tip data-for={dataId}>
+            <i className={icon}></i>
         </button>
         <ReactTooltip class='tooltip' id={dataId}>
             <span>{tooltip}</span>
@@ -12,4 +13,13 @@ const ActionButton = ({ icon, action, classButton, tooltip, dataId }) => (
     </div>
 );
 
+ActionButton.propTypes = {
+    icon: PropTypes.string.isRequired,
+    action: PropTypes.function,
+    classButton: PropTypes.string,
+    tooltip: PropTypes.string,
+    dataId: PropTypes.string,
+}
+
 export default ActionButton;
+
