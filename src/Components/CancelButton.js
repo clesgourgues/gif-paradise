@@ -5,12 +5,13 @@ import { Tooltip } from 'reas';
 import FaTimes from 'react-icons/lib/fa/times-circle'
 
 const CancelButton = ({ reset }) => (
-    <Link  to={{name: '/',
-    search: ''
-  }} onClick={reset}>
-            <FaTimes size={32} />
-            <Tooltip pos="right">
-                <Tooltip.Arrow pos="left" />Cancel</Tooltip>
+    <Link to={{
+        name: '/',
+        search: ''
+    }} onClick={reset}>
+        <FaTimes size={32} />
+        <Tooltip pos="right">
+            <Tooltip.Arrow pos="left" />Cancel</Tooltip>
     </Link>
 );
 

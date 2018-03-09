@@ -1,20 +1,26 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import GifView from './GifView';
-import Message from './Message';
+// import Message from './Message';
 
 
-const Trending = ({ gifs, toggleGif, message }) => (
-    <div>
-        <Message message={message} />
-        <GifView gifs={gifs} toggleGif={toggleGif} />
-    </div>
-)
+export default class Trending extends React.Component {
+    componentDidMount() {
+        this.props.fetchData()
+    }
 
-Trending.propTypes = {
-    gifs: PropTypes.array.isRequired,
-    toggleGif: PropTypes.func.isRequired,
-    message: PropTypes.string
+    render() {
+        return (
+            <div>
+                {/* <Message message={message} /> */}
+                <GifView gifs={this.props.gifs} toggleGif={this.props.toggleGif} />
+            </div>
+        )
+    }
 }
 
-export default Trending;
+Trending.propTypes = {
+    gifs: PropTypes.array,
+    toggleGif: PropTypes.func,
+    message: PropTypes.string
+}

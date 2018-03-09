@@ -8,8 +8,8 @@ const GifView = ({ gifs, toggleGif }) => {
 }
 
 GifView.propTypes = {
-    gifs: PropTypes.array.isRequired,
-    toggleGif: PropTypes.func.isRequired
+    gifs: PropTypes.array,
+    toggleGif: PropTypes.func
 }
 
 export default GifView;

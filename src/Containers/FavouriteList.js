@@ -4,14 +4,20 @@ import Favourites from '../Components/Favourites'
 
 const getFavourites = (gifs) => gifs.filter(g => g.favourite)
 
-const mapStateToProps = (state) => ({
-  gifs: getFavourites(state.gifs)
-})
+const mapStateToProps = (state) => {
+  return {
+    gifs: getFavourites(state.gifs),
+    hasErrored: state.itemsHasErrored,
+    isLoading: state.itemsIsLoading
+  }
+}
 
-const mapDispatchToProps =  ({
-  onGifClick: toggleGif,
-  fetchGifsWithRedux 
-})
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onGifClick: toggleGif,
+  fetchGifsWithRedux
+  }
+}
 
 const FavouriteList = connect(
   mapStateToProps,

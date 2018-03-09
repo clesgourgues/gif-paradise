@@ -36,8 +36,8 @@ const GifItem = ({ gif, toggleGif }) => {
 }
 
 GifItem.propTypes = {
-    gif: PropTypes.object.isRequired,
-    toggleGif: PropTypes.func.isRequired
+    gif: PropTypes.object,
+    toggleGif: PropTypes.func
 }
 
 export default GifItem;

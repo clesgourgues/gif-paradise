@@ -2,21 +2,26 @@ import { connect } from 'react-redux'
 import { toggleGif, fetchGifsWithRedux } from '../actions'
 import Trending from '../Components/Trending'
 
-const getTrendings = (gifs) => gifs.filter(g => g.favourite)
+
+const mapStateToProps = (state) => {
+  return {
+    gifs: state.gifs,
+    hasErrored: state.itemsHasErrored,
+    isLoading: state.itemsIsLoading
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onGifClick: toggleGif,
+    fetchData: (search) => dispatch(fetchGifsWithRedux(search))
+  }
+}
 
 
-const mapStateToProps = (state) => ({
-  gifs: getTrendings(state.gifs)
-})
-
-const mapDispatchToProps =  ({
-  onGifClick: toggleGif,
-  fetchGifsWithRedux
-})
-
-const FavouriteList = connect(
+const TrendingList = connect(
   mapStateToProps,
   mapDispatchToProps
 )(Trending)
 
-export default FavouriteList
+export default TrendingList
