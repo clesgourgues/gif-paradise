@@ -6,4 +6,4 @@ const GifApp = () => (
     <Route path='/' component={Home} />
 )
 
-export default GifApp
+export default GifApp;

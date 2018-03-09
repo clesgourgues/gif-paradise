@@ -1,5 +1,7 @@
 import React from "react";
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
+import { Grid } from 'reas';
+import FavouritesNav from './FavouritesNav';
 import Header from './Header';
 import Trending from './Trending';
 import Search from './Search';
@@ -24,8 +26,10 @@ export default class GifApp extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        if(this.props.location.search !== nextProps.location.search){
         const search = nextProps.location.search.split('=')[1]
         this.searchGif(search);
+        }
     }
 
 
@@ -42,7 +46,7 @@ export default class GifApp extends React.Component {
                 return obj;
             })
             const message = search === undefined ?
-                `Here are the <b>most trending Gifs.</b>Type your search to find your own !`:
+                `Here are the <b>most trending Gifs.</b>Type your search to find your own !` :
                 `We found <b>${gifs.length} gifs</b> for you. Click on their <i class="fas fa-heart"></i> to save them in your favourites !`
             this.setState({ gifs, message });
         })
@@ -80,18 +84,24 @@ export default class GifApp extends React.Component {
 
     render() {
         return (
-            <div className="container" >
-                <Header title={'Gif Paradise'} />
+            <Grid justify-items="center" rows="20px 30% 1fr">
+                <Grid.Item color="#333" >
+                    <FavouritesNav />
+                </Grid.Item>
+                <Grid.Item>
+                    <Header title={'Gif Paradise'} />
+                </Grid.Item>
                 <Switch>
-                    <Route exact path='/' render={() =>
-                        <Trending message={this.state.message} gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
-                    <Route exact path='/?q=:search' render={() =>
-                        <Search message={this.state.message} gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
-                    <Route path="/favourites" render={() =>
-                        <Favourites gifs={this.state.favourites} toggleGif={this.toggleGif} />} />
-                    <Redirect from='*' to='/' />
+                    <Grid.Item >
+                        <Route exact path='/' render={() =>
+                            <Trending message={this.state.message} gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
+                        <Route exact path='/?q=:search' render={() =>
+                            <Search message={this.state.message} gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
+                        <Route path="/favourites" render={() =>
+                            <Favourites gifs={this.state.favourites} toggleGif={this.toggleGif} />} />
+                    </Grid.Item>
                 </Switch>
-            </div >
+            </Grid>
         );
     }
 }

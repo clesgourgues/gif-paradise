@@ -7,9 +7,11 @@
     "react": "^16.2.0",
     "react-clipboard.js": "^1.1.3",
     "react-dom": "^16.2.0",
+    "react-icons": "^2.2.7",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.1",
-    "react-tooltip": "^3.4.0"
+    "react-tooltip": "^3.4.0",
+    "reas": "^0.6.0"
   },
   "scripts": {
     "start": "react-scripts start",

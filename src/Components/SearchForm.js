@@ -1,7 +1,8 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import SearchInput from './SearchInput';
-import ActionButton from './ActionButton';
+import SearchButton from './SearchButton';
+import CancelButton from './CancelButton';
+import { Block } from 'reas';
 
 
 export default class SearchForm extends React.Component {
@@ -9,7 +10,8 @@ export default class SearchForm extends React.Component {
         searchTerm: '',
     };
 
-    reset = () => {
+    reset = (e) => {
+        e.preventDefault();
         this.setState({
             searchTerm: ''
         })
@@ -22,15 +24,11 @@ export default class SearchForm extends React.Component {
     render() {
         const searchTerm = this.state.searchTerm
         return (
-            <form className="search-group">
-                <Link to={`/?q=${searchTerm}`}>
-                    <ActionButton icon='fa fa-search fa-2x' tooltip='Search' dataId='search' />
-                </Link>
+            <Block className="search-group">
+                <SearchButton searchTerm={searchTerm} />
                 <SearchInput value={searchTerm} handleChange={this.handleChange} />
-                <Link to='/'>
-                    <ActionButton action={this.reset} icon='fas fa-times fa-2x' tooltip='Cancel your search' dataId='cancel' />
-                </Link>
-            </form>
+                <CancelButton reset={this.reset} />
+            </Block>
         );
     }
 
