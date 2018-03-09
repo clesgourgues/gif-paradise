@@ -1,13 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from "react-router-dom";
-import GifApp from './Components/GifApp';
+import GifApp from './GifApp';
+import { Provider } from 'react-redux'
+import { createStore, applyMiddleware } from 'redux';
+import reducer from './reducers'
 import registerServiceWorker from './registerServiceWorker';
+import thunk from 'redux-thunk'
+
+const persistedState = localStorage.getItem('gifs') ? JSON.parse(localStorage.getItem('gifs')) : {}
+const store = createStore(reducer, persistedState, applyMiddleware(thunk))
+console.log(store)
+
+store.subscribe(() => {
+    localStorage.setItem('gifs', JSON.stringify(store.getState()))
+  })
 
 ReactDOM.render(
-    <Router>
-        <GifApp />
-    </Router>,
+    <Provider store={store}>
+        <Router>
+            <GifApp />
+        </Router>
+    </Provider>,
     document.getElementById('root'));
 registerServiceWorker();
 

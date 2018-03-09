@@ -1,31 +1,22 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { Grid } from 'reas';
-import FavouritesNav from './FavouritesNav';
-import Header from './Header';
-import Trending from './Trending';
-import Search from './Search';
-import Favourites from './Favourites';
-import getGifs from '../Services/getGifs';
-import getTrendingGifs from '../Services/getGifs';
-import getLocalStorage from '../Services/getLocalStorage';
-import setLocalStorage from '../Services/setLocalStorage';
+import FavouritesNav from './Components/FavouritesNav';
+import Header from './Components/Header';
+import TrendingList from './Containers/TrendingList';
+import Search from './Components/Search';
+import FavouriteList from './Containers/FavouriteList';
 
-import '../App.css';
+import './App.css';
 
 export default class GifApp extends React.Component {
-    state = {
-        gifs: [],
-        favourites: getLocalStorage('gifs'),
-        message: ''
-    };
 
-    componentDidMount() {
+/*     componentDidMount() {
         const search = this.props.location.search.split('=')[1]
         this.searchGif(search);
-    }
+    } */
 
-    componentWillReceiveProps(nextProps) {
+/*     componentWillReceiveProps(nextProps) {
         if(this.props.location.search !== nextProps.location.search){
         const search = nextProps.location.search.split('=')[1]
         this.searchGif(search);
@@ -80,7 +71,7 @@ export default class GifApp extends React.Component {
             You have <b>${nextFavourites.length} favourite gifs !</b>`,
             favourites: nextFavourites
         });
-    }
+    } */
 
     render() {
         return (
@@ -93,12 +84,9 @@ export default class GifApp extends React.Component {
                 </Grid.Item>
                 <Switch>
                     <Grid.Item >
-                        <Route exact path='/' render={() =>
-                            <Trending message={this.state.message} gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
-                        <Route exact path='/?q=:search' render={() =>
-                            <Search message={this.state.message} gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
-                        <Route path="/favourites" render={() =>
-                            <Favourites gifs={this.state.favourites} toggleGif={this.toggleGif} />} />
+                        <Route exact path='/' component={TrendingList}/>
+                        <Route exact path='/?q=:search' component={Search} />
+                        <Route path="/favourites" component={FavouriteList} />
                     </Grid.Item>
                 </Switch>
             </Grid>
