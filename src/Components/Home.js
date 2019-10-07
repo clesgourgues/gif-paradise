@@ -1,107 +1,99 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
-import { Grid } from 'reas';
-import FavouritesNav from './FavouritesNav';
-import Header from './Header';
-import Trending from './Trending';
-import Search from './Search';
-import Favourites from './Favourites';
-import getGifs from '../Services/getGifs';
-import getTrendingGifs from '../Services/getGifs';
-import getLocalStorage from '../Services/getLocalStorage';
-import setLocalStorage from '../Services/setLocalStorage';
 
-import '../App.css';
+import FavouritesNav from "./FavouritesNav";
+import Header from "./Header";
+import GifView from "./GifView";
+import Message from "./Message";
 
-export default class GifApp extends React.Component {
-    state = {
-        gifs: [],
-        favourites: getLocalStorage('gifs'),
-        message: ''
-    };
+import getGifs from "../Services/getGifs";
+import getTrendingGifs from "../Services/getTrendingGifs";
+import getLocalStorage from "../Services/getLocalStorage";
+import setLocalStorage from "../Services/setLocalStorage";
 
-    componentDidMount() {
-        const search = this.props.location.search.split('=')[1]
-        this.searchGif(search);
-    }
+import messages from "../helpers/messages";
+import { getGifsFromResponse } from "../helpers/gifs";
 
-    componentWillReceiveProps(nextProps) {
-        if(this.props.location.search !== nextProps.location.search){
-        const search = nextProps.location.search.split('=')[1]
-        this.searchGif(search);
-        }
-    }
+import "../App.css";
 
+const Home = ({ location }) => {
+  let [gifs, setGifs] = useState([]);
+  let [favourites, setfavourites] = useState([]);
+  let [message, setMessage] = useState("");
 
-    searchGif = (search) => {
-        const searchEngine = search === undefined ? getGifs : getTrendingGifs;
-        searchEngine(search).then(data => {
-            const ids = this.state.favourites.map(favourite => favourite.id);
-            const gifs = data.map(gif => {
-                let obj = {};
-                obj.url = gif.images.original.url;
-                obj.title = gif.title;
-                obj.id = gif.id;
-                obj.favourite = ids.indexOf(gif.id) > -1; // if the gif is in favourites, set favourite property to true
-                return obj;
-            })
-            const message = search === undefined ?
-                `Here are the <b>most trending Gifs.</b>Type your search to find your own !` :
-                `We found <b>${gifs.length} gifs</b> for you. Click on their <i class="fas fa-heart"></i> to save them in your favourites !`
-            this.setState({ gifs, message });
-        })
-    }
+  useEffect(() => {
+    const search = location.search.split("=")[1];
+    searchGif(search);
+  });
 
+  useEffect(() => {
+    const savedFavouriteGifs = getLocalStorage("gifs");
+    setfavourites(savedFavouriteGifs);
+  }, []);
 
-    toggleGif = (gif) => {
-        const nextGifs = this.state.gifs.map(stateGif => { // return a new array with the right favourite property for the toggled gif
-            if (stateGif.id === gif.id) {
-                return {
-                    ...stateGif,
-                    favourite: !gif.favourite
-                }
-            } else { return stateGif }
-        })
+  const searchGif = async search => {
+    const newMessage = search ? messages.search : messages.trending;
+    const data = search ? await getGifs(search) : await getTrendingGifs();
+    const ids = favourites ? favourites.map(favourite => favourite.id) : [];
+    setMessage(newMessage);
+    setGifs(getGifsFromResponse(data, ids));
+  };
 
-        const newGif = {
+  const toggleGif = toggledGif => {
+    const nextGifs = gifs.map(gif =>
+      gif.id === toggledGif.id
+        ? {
             ...gif,
-            favourite: !gif.favourite
-        }
+            favourite: !toggledGif.favourite
+          }
+        : gif
+    );
+    setGifs(nextGifs);
 
-        const nextFavourites = newGif.favourite ? // if gif is a favourite one, return an array including it, otherwise split it from it
-            [...this.state.favourites, newGif] :
-            this.state.favourites.filter(favourite => favourite.id !== newGif.id)
+    const nextFavourites = !toggledGif.favourite
+      ? [
+          ...favourites,
+          {
+            ...toggledGif,
+            favourite: !toggledGif.favourite
+          }
+        ]
+      : favourites.filter(favourite => favourite.id !== toggledGif.id);
+    setLocalStorage("gifs", nextFavourites);
+    setfavourites(nextFavourites);
 
-        setLocalStorage('gifs', nextFavourites);
+    const nextMessage = `${toggledGif.favourite ? "Removed" : "Added"} <b>${toggledGif.title}</b> ${
+      toggledGif.favourite ? "from" : "to"
+    } your favourites.
+            You have <b>${nextFavourites.length} favourite gifs !</b>`;
+    setMessage(nextMessage);
+  };
 
-        this.setState({
-            gifs: nextGifs,
-            message: `${gif.favourite ? 'Removed' : 'Added'} <b>${gif.title}</b> ${gif.favourite ? 'from' : 'to'} your favourites.
-            You have <b>${nextFavourites.length} favourite gifs !</b>`,
-            favourites: nextFavourites
-        });
-    }
+  const favouriteMessage = gifs =>
+    gifs.length > 0
+      ? `You have <b>${gifs.length} favourite gifs !</b>
+    Click on their <i class="fas fa-heart favourite"></i> 
+    if you changed your mind.</p>`
+      : "Oh ! It seems you dont like gifs !";
 
-    render() {
-        return (
-            <Grid justify-items="center" rows="20px 30% 1fr">
-                <Grid.Item color="#333" >
-                    <FavouritesNav />
-                </Grid.Item>
-                <Grid.Item>
-                    <Header title={'Gif Paradise'} />
-                </Grid.Item>
-                <Switch>
-                    <Grid.Item >
-                        <Route exact path='/' render={() =>
-                            <Trending message={this.state.message} gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
-                        <Route exact path='/?q=:search' render={() =>
-                            <Search message={this.state.message} gifs={this.state.gifs} toggleGif={this.toggleGif} />} />
-                        <Route path="/favourites" render={() =>
-                            <Favourites gifs={this.state.favourites} toggleGif={this.toggleGif} />} />
-                    </Grid.Item>
-                </Switch>
-            </Grid>
-        );
-    }
-}
+  const renderGifs = (gifs, favourite) => (
+    <div>
+      <Message message={favourite ? favouriteMessage(gifs) : message} />
+      <GifView gifs={gifs} toggleGif={toggleGif} />
+    </div>
+  );
+
+  return (
+    <div>
+      <FavouritesNav />
+      <Header title={"Gif Paradise"} />
+      <Switch>
+        <Route exact path="/" render={() => renderGifs(gifs)} />
+        <Route exact path="/?q=:search" render={() => renderGifs(gifs)} />
+        <Route path="/favourites" render={() => renderGifs(favourites, true)} />
+      </Switch>
+    </div>
+  );
+};
+
+export default Home;

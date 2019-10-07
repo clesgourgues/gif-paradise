@@ -1,36 +1,28 @@
-import React from "react";
-import SearchInput from './SearchInput';
-import SearchButton from './SearchButton';
-import CancelButton from './CancelButton';
-import { Block } from 'reas';
+import React, { useState } from "react";
+import SearchInput from "./SearchInput";
+import SearchButton from "./SearchButton";
+import CancelButton from "./CancelButton";
+import { Block } from "reas";
 
+const SearchForm = () => {
+  let [search, setSearch] = useState("");
 
-export default class SearchForm extends React.Component {
-    state = {
-        searchTerm: '',
-    };
+  const reset = e => {
+    e.preventDefault();
+    setSearch("");
+  };
 
-    reset = (e) => {
-        e.preventDefault();
-        this.setState({
-            searchTerm: ''
-        })
-    }
+  const handleChange = e => {
+    setSearch(e.target.value);
+  };
 
-    handleChange = (event) => {
-        this.setState({ searchTerm: event.target.value });
-    }
+  return (
+    <Block className="search-group">
+      <SearchButton searchTerm={search} />
+      <SearchInput value={search} handleChange={handleChange} />
+      <CancelButton reset={reset} />
+    </Block>
+  );
+};
 
-    render() {
-        const searchTerm = this.state.searchTerm
-        return (
-            <Block className="search-group">
-                <SearchButton searchTerm={searchTerm} />
-                <SearchInput value={searchTerm} handleChange={this.handleChange} />
-                <CancelButton reset={this.reset} />
-            </Block>
-        );
-    }
-
-}
-
+export default SearchForm;
