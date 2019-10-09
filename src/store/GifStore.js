@@ -1,4 +1,4 @@
-import { observable, action, computed } from "mobx";
+import { observable, action, computed, runInAction } from "mobx";
 
 import setLocalStorage from "../Services/setLocalStorage";
 import getLocalStorage from "../Services/getLocalStorage";
@@ -8,7 +8,7 @@ import getTrendingGifs from "../Services/getTrendingGifs";
 import messages from "../helpers/messages";
 import { getGifsFromResponse } from "../helpers/gifs";
 
-class AppStore {
+class GifStore {
   @observable gifs = [];
   @observable favourites = [];
   @observable message = "";
@@ -22,8 +22,10 @@ class AppStore {
     const data = search ? await getGifs(search) : await getTrendingGifs();
     const ids = this.favourites ? this.favourites.map(favourite => favourite.id) : [];
     const gifs = getGifsFromResponse(data, ids);
-    this.gifs = gifs;
-    this.message = search ? messages.search : messages.trending;
+    runInAction(() => {
+      this.gifs = gifs;
+      this.message = search ? messages.search : messages.trending;
+    });
   }
 
   @action toggleGif(toggledGif) {
@@ -70,7 +72,7 @@ class AppStore {
   }
 }
 
-const appStore = new AppStore();
-appStore.getSavedFavourites();
-appStore.searchGif();
-export default appStore;
+const gifStore = new GifStore();
+gifStore.getSavedFavourites();
+gifStore.searchGif();
+export default gifStore;
