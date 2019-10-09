@@ -4,56 +4,55 @@ import { observer } from "mobx-react";
 
 import FavouritesNav from "./FavouritesNav";
 import Header from "./Header";
-import GifView from "./GifView";
-import Message from "./Message";
+import Gifs from "./Gifs";
 
-import getLocalStorage from "../Services/getLocalStorage";
 import "../App.css";
 
-@observer
 class Home extends Component {
-  componentDidMount() {
-    const search = this.props.location.search.split("=")[1];
-    this.handleSearch(search);
-    const savedFavouriteGifs = getLocalStorage("gifs");
-    this.favourites = savedFavouriteGifs;
+  componentDidUpdate(prevProps) {
+    if (this.props.location.search && this.props.location !== prevProps.location) {
+      this.handleSearch();
+    }
   }
 
-  favouriteMessage = gifs =>
-    gifs.length > 0
-      ? `You have <b>${gifs.length} favourite gifs !</b>
-    Click on their <i class="fas fa-heart favourite"></i> 
-    if you changed your mind.</p>`
-      : "Oh ! It seems you dont like gifs !";
+  handleToggle = gif => {
+    this.props.store.toggleGif(gif);
+  };
 
-  renderGifs = (gifs, favourite) => (
-    <div>
-      <Message message={favourite ? this.favouriteMessage(gifs) : this.message} />
-      <GifView gifs={this.gifs} toggleGif={this.handleToggle} />
-    </div>
-  );
-  handleToggle = () => {
-    this.props.store.toggleGif();
-  };
   handleSearch = () => {
-    this.props.store.searchGif();
+    const search = this.props.location.search ? this.props.location.search.split("=")[1] : "";
+    this.props.store.searchGif(search);
   };
+
+  routes = ["/", "/?q=:search", "/favourites"];
+
   render() {
+    const {
+      store: { favourites, gifs, message, favouriteMessage }
+    } = this.props;
     return (
       <div>
         <FavouritesNav />
-        <Header title={"Gif Paradise"} />
+        <Header title="Gif Paradise" />
         <Switch>
-          <Route exact path="/" render={() => this.renderGifs(this.props.store.gifs)} />
-          <Route exact path="/?q=:search" render={() => this.renderGifs(this.props.store.gifs)} />
-          <Route
-            path="/favourites"
-            render={() => this.renderGifs(this.props.store.favourites, true)}
-          />
+          {this.routes.map(route =>(
+              <Route
+                exact
+                path={route}
+                render={() => (
+                  <Gifs
+                    message={route === "/favourites" ? favouriteMessage : message}
+                    gifs={route === "/favourites" ? favourites : gifs}
+                    handleToggle={this.handleToggle}
+                  />
+                )}
+              />
+            )
+          )}
         </Switch>
       </div>
     );
   }
 }
 
-export default Home;
+export default observer(Home);
